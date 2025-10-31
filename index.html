@@ -137,6 +137,196 @@
             font-size: 0.85rem;
         }
 
+        /* Factor Game */
+        .factor-game {
+            margin: 50px 0 70px;
+        }
+
+        .factor-game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .factor-game-score {
+            font-weight: 600;
+            color: #0066cc;
+        }
+
+        .factor-game-best {
+            font-weight: 600;
+            color: #999;
+        }
+
+        .factor-game-canvas {
+            position: relative;
+            height: 100px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .factor-game-canvas::before,
+        .factor-game-canvas::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 80px;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .factor-game-canvas::before {
+            left: 0;
+            background: linear-gradient(to right, #fafafa, transparent);
+        }
+
+        .factor-game-canvas::after {
+            right: 0;
+            background: linear-gradient(to left, #fafafa, transparent);
+        }
+
+        .factor-game-track {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .factor-game-node {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #666;
+            background: white;
+            border: 2px solid #e5e5e5;
+            flex-shrink: 0;
+        }
+
+        .factor-game-node.current {
+            border-color: #0066cc;
+            color: #0066cc;
+            font-weight: 600;
+        }
+
+        .factor-game-node.appear {
+            animation: nodeAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes nodeAppear {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .factor-game-connector {
+            position: relative;
+            width: 60px;
+            height: 2px;
+            flex-shrink: 0;
+            margin: 0 12px;
+        }
+
+        .factor-game-line {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 100%;
+            transform-origin: left;
+        }
+
+        .factor-game-line.add {
+            background: #22c55e;
+        }
+
+        .factor-game-line.sub {
+            background: #ef4444;
+        }
+
+        .factor-game-line.extend {
+            animation: lineExtend 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes lineExtend {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+
+        .factor-game-label {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: #999;
+            white-space: nowrap;
+        }
+
+        .factor-game-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .factor-game-btn {
+            min-width: 60px;
+            padding: 10px 18px;
+            background: #fafafa;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #333;
+            transition: all 0.15s;
+        }
+
+        .factor-game-btn:hover:not(:disabled) {
+            background: #f0f0f0;
+            border-color: #ccc;
+        }
+
+        .factor-game-btn:disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+        }
+
+        .factor-game-reset {
+            display: block;
+            margin: 0 auto;
+            padding: 10px 24px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #666;
+            transition: all 0.15s;
+        }
+
+        .factor-game-reset:hover {
+            border-color: #999;
+            color: #333;
+        }
+
         @media (max-width: 600px) {
             h1 {
                 font-size: 2rem;
@@ -166,6 +356,18 @@
             </div>
         </header>
 
+        <div class="factor-game">
+            <div class="factor-game-info">
+                <div>Score: <span class="factor-game-score" id="score">1.00</span></div>
+                <div class="factor-game-best">Best: <span id="best">-</span></div>
+            </div>
+            <div class="factor-game-canvas">
+                <div class="factor-game-track" id="track"></div>
+            </div>
+            <div class="factor-game-buttons" id="buttons"></div>
+            <button class="factor-game-reset" onclick="game.reset()">New Game</button>
+        </div>
+
         <section class="projects">
             <h2>Projects</h2>
 
@@ -187,5 +389,154 @@
         <footer>
         </footer>
     </div>
+
+    <script>
+        const game = {
+            path: [],
+            startNum: 0,
+            usedFactors: new Set(),
+            nodeElements: [],
+            bestScore: localStorage.getItem('factorGameBest') || null,
+
+            init(num) {
+                this.startNum = num;
+                this.path = [num];
+                this.usedFactors.clear();
+                this.nodeElements = [];
+
+                const track = document.getElementById('track');
+                track.innerHTML = '';
+
+                // @@@ Incremental - Create first node only
+                const node = this.createNode(num, true);
+                track.appendChild(node);
+                this.nodeElements.push(node);
+
+                this.updateScore();
+                this.updateButtons();
+            },
+
+            createNode(num, isCurrent) {
+                const node = document.createElement('div');
+                node.className = 'factor-game-node' + (isCurrent ? ' current appear' : '');
+                node.textContent = num;
+                return node;
+            },
+
+            createConnector(factor, op) {
+                const connector = document.createElement('div');
+                connector.className = 'factor-game-connector';
+
+                const line = document.createElement('div');
+                line.className = `factor-game-line ${op} extend`;
+                connector.appendChild(line);
+
+                const label = document.createElement('div');
+                label.className = 'factor-game-label';
+                label.textContent = op === 'add' ? `+${factor}` : `−${factor}`;
+                connector.appendChild(label);
+
+                return connector;
+            },
+
+            applyOperation(factor, op) {
+                const currentNum = this.path[this.path.length - 1];
+                const newNum = op === 'add' ? currentNum + factor : currentNum - factor;
+
+                this.usedFactors.add(factor);
+                this.path.push(newNum);
+
+                // @@@ Incremental - Only append new elements
+                const track = document.getElementById('track');
+
+                // Remove current class from last node
+                const lastNode = this.nodeElements[this.nodeElements.length - 1];
+                lastNode.classList.remove('current');
+
+                // Append connector
+                const connector = this.createConnector(factor, op);
+                track.appendChild(connector);
+
+                // Append new node
+                const newNode = this.createNode(newNum, true);
+                track.appendChild(newNode);
+                this.nodeElements.push(newNode);
+
+                // Center the track
+                this.centerTrack();
+
+                this.updateScore();
+                this.updateButtons();
+            },
+
+            centerTrack() {
+                const track = document.getElementById('track');
+                const trackWidth = track.offsetWidth;
+                const offset = -trackWidth / 2;
+                track.style.transform = `translate(calc(-50% + ${offset}px), -50%)`;
+            },
+
+            updateScore() {
+                const currentNum = this.path[this.path.length - 1];
+                const score = (currentNum / this.startNum).toFixed(5);
+                document.getElementById('score').textContent = score;
+
+                // Update best
+                if (!this.bestScore || parseFloat(score) > parseFloat(this.bestScore)) {
+                    this.bestScore = score;
+                    localStorage.setItem('factorGameBest', score);
+                }
+                document.getElementById('best').textContent = this.bestScore || '-';
+            },
+
+            updateButtons() {
+                const currentNum = this.path[this.path.length - 1];
+                const factors = this.getPrimeFactors(currentNum);
+                const buttonsDiv = document.getElementById('buttons');
+                buttonsDiv.innerHTML = '';
+
+                factors.forEach(factor => {
+                    const used = this.usedFactors.has(factor);
+
+                    const addBtn = document.createElement('button');
+                    addBtn.className = 'factor-game-btn';
+                    addBtn.textContent = `+${factor}`;
+                    addBtn.disabled = used;
+                    addBtn.onclick = () => this.applyOperation(factor, 'add');
+
+                    const subBtn = document.createElement('button');
+                    subBtn.className = 'factor-game-btn';
+                    subBtn.textContent = `−${factor}`;
+                    subBtn.disabled = used;
+                    subBtn.onclick = () => this.applyOperation(factor, 'sub');
+
+                    buttonsDiv.appendChild(addBtn);
+                    buttonsDiv.appendChild(subBtn);
+                });
+            },
+
+            getPrimeFactors(n) {
+                const factors = new Set();
+                let num = Math.abs(n);
+
+                for (let i = 2; i <= Math.sqrt(num); i++) {
+                    while (num % i === 0) {
+                        factors.add(i);
+                        num /= i;
+                    }
+                }
+                if (num > 1) factors.add(num);
+                return Array.from(factors).sort((a, b) => a - b);
+            },
+
+            reset() {
+                const newNum = Math.floor(Math.random() * 90) + 10;
+                this.init(newNum);
+            }
+        };
+
+        // Start game
+        game.init(11);
+    </script>
 </body>
 </html>
