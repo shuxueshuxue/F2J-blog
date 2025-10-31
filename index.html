@@ -192,7 +192,7 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateY(-50%);
             display: flex;
             align-items: center;
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -310,21 +310,33 @@
         }
 
         .factor-game-reset {
-            display: block;
-            margin: 0 auto;
-            padding: 10px 24px;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             background: white;
             border: 1px solid #ddd;
-            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 1.2rem;
             color: #666;
+            display: none;
+            align-items: center;
+            justify-content: center;
             transition: all 0.15s;
+            z-index: 3;
+        }
+
+        .factor-game-reset.show {
+            display: flex;
         }
 
         .factor-game-reset:hover {
             border-color: #999;
             color: #333;
+            transform: translateY(-50%) scale(1.1);
         }
 
         @media (max-width: 600px) {
@@ -363,9 +375,9 @@
             </div>
             <div class="factor-game-canvas">
                 <div class="factor-game-track" id="track"></div>
+                <button class="factor-game-reset" id="resetBtn" onclick="game.reset()">↻</button>
             </div>
             <div class="factor-game-buttons" id="buttons"></div>
-            <button class="factor-game-reset" onclick="game.reset()">New Game</button>
         </div>
 
         <section class="projects">
@@ -412,6 +424,7 @@
                 track.appendChild(node);
                 this.nodeElements.push(node);
 
+                this.centerTrack();
                 this.updateScore();
                 this.updateButtons();
             },
@@ -470,10 +483,13 @@
             },
 
             centerTrack() {
+                // @@@ Position track so current (last) node stays centered
+                const nodeWidth = 48;
+                const connectorWidth = 84; // 60px + 12px margins
+                const offset = -(this.path.length - 1) * (nodeWidth + connectorWidth);
+
                 const track = document.getElementById('track');
-                const trackWidth = track.offsetWidth;
-                const offset = -trackWidth / 2;
-                track.style.transform = `translate(calc(-50% + ${offset}px), -50%)`;
+                track.style.transform = `translate(${offset}px, -50%)`;
             },
 
             updateScore() {
@@ -495,8 +511,11 @@
                 const buttonsDiv = document.getElementById('buttons');
                 buttonsDiv.innerHTML = '';
 
+                let hasAvailableMoves = false;
+
                 factors.forEach(factor => {
                     const used = this.usedFactors.has(factor);
+                    if (!used) hasAvailableMoves = true;
 
                     const addBtn = document.createElement('button');
                     addBtn.className = 'factor-game-btn';
@@ -513,6 +532,14 @@
                     buttonsDiv.appendChild(addBtn);
                     buttonsDiv.appendChild(subBtn);
                 });
+
+                // Show reset button if no moves available
+                const resetBtn = document.getElementById('resetBtn');
+                if (hasAvailableMoves) {
+                    resetBtn.classList.remove('show');
+                } else {
+                    resetBtn.classList.add('show');
+                }
             },
 
             getPrimeFactors(n) {
