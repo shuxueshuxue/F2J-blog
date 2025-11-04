@@ -81,15 +81,6 @@
             padding: 32px;
             margin-bottom: 24px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-            transition: transform 0.2s, box-shadow 0.2s;
-            text-decoration: none;
-            display: block;
-            color: inherit;
-        }
-
-        .project-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
         }
 
         .project-card h3 {
@@ -103,6 +94,10 @@
             line-height: 1.7;
         }
 
+        .project-tags {
+            margin-top: 12px;
+        }
+
         .project-card .tag {
             display: inline-block;
             background: #f0f0f0;
@@ -110,8 +105,70 @@
             border-radius: 4px;
             font-size: 0.85rem;
             color: #666;
-            margin-top: 12px;
             margin-right: 8px;
+        }
+
+        .demo-link {
+            display: inline-block;
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 16px;
+            transition: color 0.2s;
+        }
+
+        .demo-link:hover {
+            color: #0052a3;
+        }
+
+        .project-journal {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .project-journal h4 {
+            font-size: 0.95rem;
+            color: #999;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .journal-entries {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .journal-entries li {
+            margin-bottom: 8px;
+        }
+
+        .journal-entries a {
+            display: flex;
+            align-items: baseline;
+            text-decoration: none;
+            color: #666;
+            transition: color 0.2s;
+            padding: 6px 0;
+        }
+
+        .journal-entries a:hover {
+            color: #0066cc;
+        }
+
+        .journal-date {
+            font-size: 0.85rem;
+            color: #999;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .journal-title {
+            flex: 1;
         }
 
         footer {
@@ -381,35 +438,36 @@
         </div>
 
         <section class="projects">
-            <h2>Journal</h2>
-
-            <a href="/journal/2025-11-03.html" class="project-card">
-                <h3>思语伙伴（Ink & Memory）- 团队项目文档</h3>
-                <p>
-                    AI驱动的写作伙伴，在写作过程中提供多视角实时评论。核心创新：渐进式评论（写作过程中自然出现）+ 多声音系统（12种AI人格）。
-                    团队项目文档包含需求分析、商业前景、技术架构和团队协作等完整内容。
-                </p>
-                <span class="tag">项目文档</span>
-                <span class="tag">2025-11-03</span>
-            </a>
-
-            <!-- Add more journal entries here -->
-        </section>
-
-        <section class="projects">
             <h2>Projects</h2>
 
-            <a href="https://lexicalmathical.com/ink-and-memory" class="project-card">
+            <div class="project-card">
                 <h3>Ink & Memory</h3>
                 <p>
                     A Disco Elysium-inspired writing interface where your thoughts manifest as distinct inner voices.
                     Each voice comments on your writing with its own personality, creating an interactive dialogue
                     between you and your cognitive skills.
                 </p>
-                <span class="tag">React</span>
-                <span class="tag">AI</span>
-                <span class="tag">Writing Tool</span>
-            </a>
+
+                <a href="https://lexicalmathical.com/ink-and-memory" class="demo-link">View Demo →</a>
+
+                <div class="project-journal">
+                    <h4>Development Journal</h4>
+                    <ul class="journal-entries">
+                        <li>
+                            <a href="/journal/2025-11-03.html">
+                                <span class="journal-date">2025-11-03</span>
+                                <span class="journal-title">团队项目文档 - NABCD分析、团队架构、Alpha功能范围</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="project-tags">
+                    <span class="tag">React</span>
+                    <span class="tag">AI</span>
+                    <span class="tag">Writing Tool</span>
+                </div>
+            </div>
 
             <!-- Add more projects here as cards -->
         </section>
