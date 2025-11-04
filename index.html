@@ -22,7 +22,82 @@
         .container {
             max-width: 800px;
             margin: 0 auto;
+            margin-left: 280px;
             padding: 60px 20px;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 200px;
+            height: 100vh;
+            background: white;
+            border-right: 1px solid #e5e5e5;
+            padding: 60px 40px;
+            z-index: 100;
+        }
+
+        .sidebar-tabs {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-tabs li {
+            margin-bottom: 24px;
+        }
+
+        .sidebar-tabs a {
+            display: block;
+            text-decoration: none;
+            color: #999;
+            font-size: 1.1rem;
+            font-weight: 400;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+
+        .sidebar-tabs a:hover {
+            color: #333;
+        }
+
+        .sidebar-tabs a.active {
+            color: #0066cc;
+            font-weight: 500;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid #e5e5e5;
+                padding: 20px;
+            }
+
+            .sidebar-tabs {
+                display: flex;
+                justify-content: space-around;
+            }
+
+            .sidebar-tabs li {
+                margin-bottom: 0;
+            }
+
+            .container {
+                margin-left: auto;
+                padding: 40px 20px;
+            }
         }
 
         header {
@@ -412,6 +487,15 @@
     </style>
 </head>
 <body>
+    <nav class="sidebar">
+        <ul class="sidebar-tabs">
+            <li><a href="#notes" data-tab="notes">notes</a></li>
+            <li><a href="#products" data-tab="products" class="active">products</a></li>
+            <li><a href="#research" data-tab="research">research</a></li>
+            <li><a href="#games" data-tab="games">games</a></li>
+        </ul>
+    </nav>
+
     <div class="container">
         <header>
             <h1>F2J</h1>
@@ -425,7 +509,32 @@
             </div>
         </header>
 
-        <section class="projects">
+        <section id="notes" class="content-section">
+            <h2>Development Notes</h2>
+            <div class="journal-entries">
+                <div style="margin-bottom: 20px;">
+                    <a href="/journal/2025-11-04.html" style="text-decoration: none; color: inherit; display: block; padding: 16px; background: white; border-radius: 8px; border: 1px solid #e5e5e5;">
+                        <div style="display: flex; align-items: baseline; margin-bottom: 8px;">
+                            <span style="font-size: 0.85rem; color: #999; font-family: 'SF Mono', 'Monaco', 'Consolas', monospace; margin-right: 12px;">2025-11-04</span>
+                            <span style="font-weight: 500; color: #1a1a1a;">Alpha 阶段计划与分工</span>
+                        </div>
+                        <p style="color: #666; margin: 0; font-size: 0.95rem;">任务清单与时间规划 - Ink & Memory 项目</p>
+                    </a>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <a href="/journal/2025-11-03.html" style="text-decoration: none; color: inherit; display: block; padding: 16px; background: white; border-radius: 8px; border: 1px solid #e5e5e5;">
+                        <div style="display: flex; align-items: baseline; margin-bottom: 8px;">
+                            <span style="font-size: 0.85rem; color: #999; font-family: 'SF Mono', 'Monaco', 'Consolas', monospace; margin-right: 12px;">2025-11-03</span>
+                            <span style="font-weight: 500; color: #1a1a1a;">团队项目文档</span>
+                        </div>
+                        <p style="color: #666; margin: 0; font-size: 0.95rem;">NABCD分析、团队架构、Alpha功能范围 - Ink & Memory 项目</p>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="products" class="content-section active">
+            <section class="projects">
             <h2>Projects</h2>
 
             <div class="project-card">
@@ -465,8 +574,18 @@
 
             <!-- Add more projects here as cards -->
         </section>
+        </section>
 
-        <div class="factor-game">
+        <section id="research" class="content-section">
+            <h2>Research</h2>
+            <p style="color: #999; font-style: italic;">Coming soon...</p>
+        </section>
+
+        <section id="games" class="content-section">
+            <h2>Prime Factor Game</h2>
+            <p style="color: #666; margin-bottom: 32px;">Reduce any number to 1 using its prime factors. Each factor can only be used once.</p>
+
+            <div class="factor-game">
             <div class="factor-game-info">
                 <div>Score: <span class="factor-game-score" id="score">1.00</span></div>
                 <div class="factor-game-best">Best: <span id="best">-</span></div>
@@ -477,6 +596,7 @@
             </div>
             <div class="factor-game-buttons" id="buttons"></div>
         </div>
+        </section>
 
         <footer>
         </footer>
@@ -644,6 +764,24 @@
 
         // Start game
         game.init(11);
+
+        // Tab switching
+        document.querySelectorAll('.sidebar-tabs a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                // Remove active class from all tabs and sections
+                document.querySelectorAll('.sidebar-tabs a').forEach(a => a.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+
+                // Add active class to clicked tab
+                link.classList.add('active');
+
+                // Show corresponding section
+                const tab = link.getAttribute('data-tab');
+                document.getElementById(tab).classList.add('active');
+            });
+        });
     </script>
 </body>
 </html>
