@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World 🗺️ - F@J</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Noto Sans SC";
+            line-height: 1.8;
+            color: #333;
+            background: #fafafa;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 24px;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: #333;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 48px;
+            margin-bottom: 24px;
+            color: #1a1a1a;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 36px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            margin-top: 28px;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        ul, ol {
+            margin-left: 24px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            background: white;
+        }
+
+        th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #e5e5e5;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border: 1px solid #e5e5e5;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 24px 0;
+            border-radius: 4px;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        blockquote {
+            border-left: 4px solid #e5e5e5;
+            padding-left: 20px;
+            margin: 24px 0;
+            color: #666;
+        }
+
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 0.95rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            h3 {
+                font-size: 1.3rem;
+            }
+
+            .container {
+                padding: 40px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← 返回首页</a>
+
+        <h1>group</h1>
+<h3>Introduction</h3>
+<p><strong><em>Quasihedral 16</em></strong> - The quasihedral group of order 16</p>
+<p>![[Pasted image 20221011215637.png|400]]</p>
+<p>From its multiplication table we can see clearly that the left-top zone is a copy of $C_8$ , and together with an order-2 element $t$ they form the whole group. But in which way do they connect with each other?</p>
+<p>Given any two groups N and H and a group homomorphism φ: H → Aut(N), we can construct a new group N ⋊φ H, called the semidirect product of N and H with respect to φ, defined as follows:
+- The underlying set is the Cartesian product N × H.
+- The group operation ${\displaystyle \bullet }$ is determined by the homomorphism φ:
+- $${\displaystyle {\begin{aligned}\bullet :(N\rtimes <em _varphi="\varphi">{\varphi }H)\times (N\rtimes </em>H)&amp;\to N\rtimes <em 1="1">{\varphi }H\(n</em>\varphi },h_{1})\bullet (n_{2},h_{2})&amp;=(n_{1}\varphi (h_{1})(n_{2}),\,h_{1}h_{2})=(n_{1<em 1="1">{h</em>$$}}(n_{2}),\,h_{1}h_{2})\end{aligned}}</p>
+<blockquote>
+<p><em>Equivalence condition of a semidirect product</em>
+$$\begin{align}
+\text{G is a semidirect product}&amp;\Leftrightarrow \exists\ H\lhd G,K&lt;G,HK=G,H\cap K={e}  \
+&amp;\Leftrightarrow \exists\ H\lhd G,K&lt;G,G/H\cong K \
+\end{align}$$</p>
+</blockquote>
+<hr />
+<h5>diagram</h5>
+<p>The second condition can be rephrase as: the following exact sequence is split ($ps=id_H$)</p>
+<p>![[Pasted image 20221030142758.png]]</p>
+<hr />
+<p><img alt="|350" src="World%20🗺️.png" /></p>
+<p>In the game <em>Minecraft</em> , the player can live both in Overworld and in Nether. If he lives in Overworld, he can transmit himself to Nether if he build a portal (magic!), vice versa. There is a correspondence between the two worlds' coordinate systems: if he comes to Nether by portal A, and builds another portal B <strong>10</strong> meters away. Then transmit back to the Overworld through portal B, he will find himself <strong>80</strong> meters away from the portal A (another end, of course, it's "long" enough to connect two worlds) on the Overworld.  </p>
+<p><strong><em>Quasihedral 16</em></strong> has a similar duel world structure, this can bee seen easily form its generators - 
+⟨a, b : a<sup>8</sup> = b<sup>2</sup> = 1, bab<sup>-1</sup> = a<sup>3</sup>⟩
+We can interpret $a$ as move some distance in the current world, and $b$ as changing the world (or rewinding the road. Anyway, change the world's status).</p>
+<p>We interpret an action series in Quasihedral 16 like
+$abab^{-1}$ 
+as "move 1 meter" "come into the Nether" "move 1 meter " "come back to Overworld"
+and because 1 meter in the Nether = 3 meters on the Overworld
+the result should be $a^4$, i.e.
+$abab^{-1}=a^4$</p>
+<p>Recall the first equivalence condition of semidirect product
+$$\text{G is a semidirect product}\Leftrightarrow \exists\ H\lhd G,K&lt;G,HK=G,H\cap K={e}$$
+We find the correspondence 
+$H\lhd G$   $\Leftrightarrow$   world status can be recorded separately
+$K &lt; G$   $\Leftrightarrow$   world status form a group (reversible, composition, identity)
+$HK = G$   $\Leftrightarrow$   each group element is a combination of "move" and "change world"
+$H\cap G={e}$   $\Leftrightarrow$   move won't change the world, and change world status is never equivalent to a move</p>
+<p>Metaphor : any world status is reversible. This is acceptable to me, if not romantic. At least we can restrict our view to semi-groups if necessary. But there is something more problematic : associativity. (See discussions below)</p>
+<p>Quasihedral 16's Cayley diagram - 
+![[Pasted image 20221011230328.png|300]]</p>
+<p>More examples -
+$D_n$ (Dihedral groups) : mirror world</p>
+<h3>Further discussion</h3>
+<p>It's not a coincidence that Quasihedral 16 exists as a group. It is based on the fact
+$$3^2=8+1$$
+Why is it so important? Associative! <em>Associativity restricts the group structure to be the "same" everywhere.</em>
+Back to our <em>Minecraft</em> example. If someone has never played this game and has no idea what the Nether and what the Overworld is (even when he really sees them). The first time he enters the game world, he has to figure out where he is with the only fact he know "1 step in the Nether = 8 steps in the Overworld". And he does. Then he figures out successfully where he is. 
+But will it work out the same way in the group Quasihedral 16?
+<strong><em>No!</em></strong>
+Look at the Cayley diagram. Although it does fit the pattern that "1 step on the inner circle, 3 steps on the outer circle", you will (surprisingly) find it also works on the contrary: "1 step on the outer circle, 3 steps on the inner circle".
+And that's why $3^2=8+1$ is necessary. Also notice: the group acts on $C_8$ is $C_2$, so the automorphism which $e \neq x\in C_2$ maps to must be of order 2 (or order 1, in that case it becomes direct product).
+The same idea can help us judge if a certain automorphism is reasonable for constructing a semidirect product. For example, the classification of groups with order $2p$ .</p>
+<p><strong>A property, but also something it fails to model:</strong></p>
+<blockquote>
+<p>$abb^{-1}=a(bb^{-1})=a$ 
+Imagine this: a man stands on the edge of the cliff (a). We claim if he steps forward (b), and steps back ($b^{-1}$), everything remains the same. </p>
+</blockquote>
+<p>To fix this, we need group [[Blogs/Mathematics/Group Theory/Action 🔥]] to be our tool.</p>
+    </div>
+</body>
+</html>

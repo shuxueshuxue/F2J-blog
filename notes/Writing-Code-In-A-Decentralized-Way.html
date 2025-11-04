@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question - F@J</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Noto Sans SC";
+            line-height: 1.8;
+            color: #333;
+            background: #fafafa;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 24px;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: #333;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 48px;
+            margin-bottom: 24px;
+            color: #1a1a1a;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 36px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            margin-top: 28px;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        ul, ol {
+            margin-left: 24px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            background: white;
+        }
+
+        th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #e5e5e5;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border: 1px solid #e5e5e5;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 24px 0;
+            border-radius: 4px;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        blockquote {
+            border-left: 4px solid #e5e5e5;
+            padding-left: 20px;
+            margin: 24px 0;
+            color: #666;
+        }
+
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 0.95rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            h3 {
+                font-size: 1.3rem;
+            }
+
+            .container {
+                padding: 40px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← 返回首页</a>
+
+        <h1>blog</h1>
+<p><img alt="|700" src="Writing%20Code%20In%20A%20Decentralized%20Way.png" /></p>
+<blockquote>
+<p>[!quote] A programmer should program the way s/he programs.</p>
+</blockquote>
+<p>For now I am doing almost all work in my Obsidian vault, which is named <a href="https://github.com/shuxueshuxue/Markcode-engine">Markcode</a>.</p>
+<p>It's a knowledge base, a research engine, also an IDE capable of full stack software engineering. Mostly importantly, it develops itself.</p>
+<p>In this blog I will cover its essence: <em>writing code in a decentralized way</em>.</p>
+<h2>The Folder Structure</h2>
+<pre><code>Markcode
+- Notes
+- Modules
+- Scripts
+- Others
+  - Template
+</code></pre>
+<h2>Block Based Programming</h2>
+<h3>From Markdown to Code Files</h3>
+<p>The system binds .md files with the code files extracted from code blocks in it. For example, if you both Python and Rust implementations (as two code blocks) in the note file <code>euler_method.md</code> , then when running the code execution command, <code>euler_method.py</code>, <code>euler_method.rs</code> will both be created in the same folder. There are some simple refactor mechanism - when you rename the .md file, relevant code files will be automatically renamed. And orphans will be automatically deleted.</p>
+<h3>Markers to Direct Execution Flow</h3>
+<p>Markcode employs specific markers that guide the execution flow within the vault. These markers act as directives, instructing the system on how to handle and execute the enclosed code blocks.</p>
+<p>For example, the following marker is used to tell the code executor to only extract code blocks into code files without actually running the code.
+<code>&lt;!-- nr --&gt;</code>
+If you want to ignore other code blocks and run Haskell only, use this combination of markers.
+<code>&lt;!-- nr --&gt;&lt;!-- run haskell --&gt;</code>
+By default, all code blocks in the vault are extracted, combined sequentially and executed together. If you want to run only some specific blocks, simply comment the first line with <code>#!</code> (The symbol to comment is dependent on the language)</p>
+<h3>Everything Can Be Templated</h3>
+<p>This is powered by the <code>Templater</code> plugin.</p>
+<p>To accelerate development and maintain consistency, Markcode incorporates templates that can be invoked across various environments. These templates act as blueprints, providing standardized structures for new modules, scripts, or components.</p>
+<p>Here's typical Template for C++ programming.</p>
+<pre><code class="language-js">tR += `
+\`\`\`cpp
+#include &lt;iostream&gt;
+
+extern &quot;C&quot; {
+    int main();
+}
+
+int main() {
+    std::cout &lt;&lt; &quot;Hello!&quot; &lt;&lt; std::endl;
+    return 0;
+}
+\`\`\`
+
+\`\`\`python
+import runcpp
+
+if __name__ == &quot;__main__&quot;:
+    lib = runcpp.load_dll(&quot;${tp.file.title}.dll&quot;)
+    lib.main()
+\`\`\`
+`
+</code></pre>
+<h2>Test Flow Module</h2>
+<p>Testing is the bedrock of robust software development. The Test Flow Module in Markcode automates the testing pipeline. Here's an example to test rust code with a <em>push</em> script (the first block) to interact with the local project files.</p>
+<p>```push fold
+D:\Codebase\rustplay\src\main.rs</p>
+<pre><code>
+```python fold
+import testflow
+testflow.rustplay()
+</code></pre>
+<pre><code class="language-rust">fn main() {
+    println!(&quot;HW!&quot;);
+}
+</code></pre>
+<h2>A Note Can Be an App</h2>
+<p>In the traditional paradigm, applications are monolithic constructs with tightly coupled components. Markcode disrupts this notion by transforming individual notes within the Obsidian vault into self-contained applications. Each note encapsulates its functionality, dependencies, and execution logic, allowing for a highly modular and scalable development process.</p>
+<p>Here's a LLM chat App written this way.
+It supports multi-round conversation, note referencing and web browsing. It reads the Question and writes the output.</p>
+<pre><code class="language-markdown"># Question
+
+# Response
+
+----
+</code></pre>
+<p>```python fold</p>
+<h1>!</h1>
+<p>import requests
+import json
+import myapikeys
+import fileUtils
+from iohelper import *</p>
+<p>API_KEY = myapikeys.anthropic</p>
+<p>def call_claude_api(prompt):
+    url = "https://api.anthropic.com/v1/messages"
+    headers = {
+        "Content-Type": "application/json",
+        "X-Api-Key": API_KEY,
+        "anthropic-version": "2023-06-01",
+    }
+    data = {
+        "model": "claude-3-5-sonnet-20240620",
+        "max_tokens": 3000,
+        "messages": [{"role": "user", "content": prompt}]
+    }
+    response = requests.post(url, headers=headers, json=data)</p>
+<pre><code>if response.status_code == 200:
+    return response.json()['content'][0]['text']
+else:
+    return f"Error: {response.status_code}, {response.text}"
+</code></pre>
+<p>def main():
+    user_input = inputh("Question")
+    clearh("Response")
+    printh("Thinking...", "Response")</p>
+<pre><code># Replace links with file content
+processed_input = fileUtils.replace_links_with_content(user_input)
+if "&lt;!-- web --&gt;" in user_input:
+    import webCrawler
+    processed_input = webCrawler.replace_links_with_content(user_input)
+# printh(processed_input)
+
+response = call_claude_api(processed_input)
+clearh("Response")
+printh(response, "Response")
+
+chat_history = processed_input + "\n\n**Claude:**\n" + response + "\n\n---\n"
+with open("chat_history_temp.md", "w", encoding="utf-8") as f:
+    f.write(chat_history)
+</code></pre>
+<p>if <strong>name</strong> == "<strong>main</strong>":
+    main()</p>
+<pre><code>
+## Implementing the Modules
+
+### Obsidian Server
+
+The `obsidian.md ` module is the linchpin that interacts with an Obsidian server, ensuring that the vault is initialized correctly and that the server remains responsive. It encapsulates functions to run JavaScript code within the Obsidian environment, manage file operations, and handle user interactions.
+
+Here's a brief view of it.
+
+```python
+# vaultBuilding.md Module
+
+import requests
+import os
+import time
+
+note_path = os.environ.get('MD_FILE')
+obs_vault = os.environ.get('OBS_VAULT')
+
+if note_path:
+    note_title = os.path.splitext(os.path.basename(note_path))[0]
+    note_directory = os.path.dirname(note_path)
+
+def initialize(max_attempts=30, delay=0.5):
+    &quot;&quot;&quot;
+    Wait for the server to launch and become responsive.
+
+    :param max_attempts: Maximum number of attempts to connect to the server
+    :param delay: Delay in seconds between each attempt
+    :return: True if server is responsive, False otherwise
+    &quot;&quot;&quot;
+
+    for attempt in range(max_attempts):
+        try:
+            response = runjs(&quot;return 200;&quot;)
+            if response == 200:
+                return True
+        except requests.RequestException:
+            pass
+        time.sleep(delay)
+
+    print(f&quot;Server did not become responsive after {max_attempts} attempts.&quot;)
+    return False
+
+def runjs(js_code, vault_path=obs_vault, server_url='http://localhost:3300'):
+    code_file = os.path.join(vault_path, 'code.js')
+
+    # Write the JavaScript code to the file
+    with open(code_file, 'w', encoding=&quot;utf-8&quot;) as f:
+        f.write(js_code)
+
+    # Send the request to the server
+    response = requests.post(f'{server_url}/run')
+
+    if response.status_code == 200:
+        try:
+            return response.json()
+        except Exception:
+            return &quot;&quot;
+    else:
+        raise Exception(f&quot;Error: {response.status_code} - {response.text}&quot;)
+
+# Additional functions omitted for brevity
+</code></pre>
+<p>This module not only ensures that the Obsidian server is up and running but also provides utility functions to execute JavaScript code, interact with the file system, and facilitate user interactions within the vault.</p>
+<h3>IO Helper Module</h3>
+<p>The <code>iohelper.md</code> module serves as the intermediary between Python scripts and the Obsidian environment. It provides functions to manipulate markdown files, prompt user inputs, display notifications, and handle cursor interactions within the editor.</p>
+<pre><code class="language-python"># iohelper.md Module
+
+import sys
+import os
+import obsidian
+import time
+
+note_path = os.environ.get('MD_FILE')
+obs_vault = os.environ.get('OBS_VAULT')
+
+note_title = os.path.splitext(os.path.basename(note_path))[0]
+note_directory = os.path.dirname(note_path)
+
+def printh(content: str, title_name: str = &quot;&quot;, output_file: str = &quot;&quot;):
+    # Function implementation...
+    pass
+
+def inputh(title_name: str) -&gt; str:
+    # Function implementation...
+    pass
+
+def clearh(title_name: str = &quot;&quot;, target_file=None):
+    # Function implementation...
+    pass
+
+def input_prompt(prompt_text: str) -&gt; str:
+    # Function implementation...
+    pass
+
+def notice(text: str):
+    # Function implementation...
+    pass
+
+def get_selection():
+    # Function implementation...
+    pass
+
+def append_cursor(text: str):
+    # Function implementation...
+    pass
+
+def get_cursor_line():
+    # Function implementation...
+    pass
+
+# Optional functions
+def refreshh(title_name, refresh_function):
+    # Function implementation...
+    pass
+</code></pre>
+<h2>Modularizing Other Languages</h2>
+<p>Here's the <code>here.md</code> module that implements IO operation for Haskell.</p>
+<pre><code class="language-haskell">-- Here.md Module
+
+module Here
+    ( Showable(..)
+    , appendHere
+    , getOutputFilename
+    ) where
+
+import System.FilePath (takeBaseName, replaceExtension)
+import System.Environment (getProgName)
+
+class Showable a where
+    toString :: a -&gt; String
+
+instance Showable String where
+    toString = id
+
+instance Showable Int where
+    toString = show
+
+instance Showable Integer where
+    toString = show
+
+instance Showable Double where
+    toString = show
+
+instance Showable Bool where
+    toString = show
+
+-- Add more instances as needed
+
+appendHere :: Showable a =&gt; a -&gt; IO FilePath
+appendHere obj = do
+    outputFile &lt;- getOutputFilename
+    appendFile outputFile (&quot;\n&quot; ++ toString obj)
+    return outputFile
+
+getOutputFilename :: IO FilePath
+getOutputFilename = do
+    mainScriptName &lt;- getProgName
+    let baseName = takeBaseName mainScriptName
+    return $ replaceExtension baseName &quot;.md&quot;
+
+main :: IO ()
+main = do
+    putStrLn &quot;Successfully extracted.&quot;
+</code></pre>
+<p>In this module, the <code>Showable</code> typeclass and its instances facilitate the conversion of various data types to strings, enabling seamless integration with markdown outputs. Functions like <code>appendHere</code> and <code>getOutputFilename</code> provide utility methods to manage file operations, ensuring that each module remains focused and maintainable.</p>
+<h2>Being Self-contained</h2>
+<ul>
+<li>Bootstrapping
+The system is written by itself, and thus can improve itself iteratively.</li>
+<li>Literal Programming
+As a form of literal programming, each module documents itself by simply putting markdown content between code blocks.</li>
+</ul>
+<h1>More</h1>
+<p>Lots of things are not covered in this blog but also crucial for this vault:
+Version control system, AI integration, scripts to interact with the internet and local file system, project management system, academic resource management, code highlight, reference tracing, vim editor...</p>
+<h1>softwareEngineering #decentralization #Obsidian #Markcode #programming #modulardevelopment</h1>
+    </div>
+</body>
+</html>

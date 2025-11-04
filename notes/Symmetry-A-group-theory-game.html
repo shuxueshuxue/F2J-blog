@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symmetry A group theory game - F@J</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Noto Sans SC";
+            line-height: 1.8;
+            color: #333;
+            background: #fafafa;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 24px;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: #333;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 48px;
+            margin-bottom: 24px;
+            color: #1a1a1a;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 36px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            margin-top: 28px;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        ul, ol {
+            margin-left: 24px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            background: white;
+        }
+
+        th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #e5e5e5;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border: 1px solid #e5e5e5;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 24px 0;
+            border-radius: 4px;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        blockquote {
+            border-left: 4px solid #e5e5e5;
+            padding-left: 20px;
+            margin: 24px 0;
+            color: #666;
+        }
+
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 0.95rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            h3 {
+                font-size: 1.3rem;
+            }
+
+            .container {
+                padding: 40px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← 返回首页</a>
+
+        <p><a href="https://github.com/shuxueshuxue/Symmetry-A-Group-theory-Game">shuxueshuxue/Symmetry-A-Group-theory-Game (github.com)</a>
+Welcome to the world of <em>Symmetry</em>!</p>
+<p><img alt="|600" src="Symmetry%20A%20group%20theory%20game.png" /></p>
+<h2>Why Play Symmetry?</h2>
+<p>This is an interactive game about group theory. In group theory, every finite group has a finite multiplication table, which displays certain patterns and follows specific rules. By filling in the missing information on the multiplication table, players can gain a deeper understanding of these rules and experience the harmony and beauty of mathematics.</p>
+<h2>How to Play</h2>
+<p>There are two modes available for players to choose from: <em>Exploration Mode</em> and <em>Puzzle Mode</em>. In Exploration Mode, players fill in an empty group multiplication table. After completely filling it, they can click the submit button to verify the identity of the filled group (in terms of isomorphism). If it's a new group that has never been submitted before, it will be added to the Gallery for players to admire.
+Puzzle Mode also involves filling in a group multiplication table but is more challenging: some cells are pre-determined, making the solution often unique. Players need to gather all possible information (sometimes provided in hints) like detectives to determine the identity of the current group and fill in the remaining cells.
+Players can create new puzzles for sharing and challenging each other by referring to the content in the puzzle folder in the game directory.</p>
+<h2>Advanced Play</h2>
+<p>By clicking on two header numbers, players can swap element indices, allowing them to attempt to create longer composition sequences by placing elements of normal subgroups in the top-left corner. This composition sequence will be displayed upon submission. In future versions of the game, a more advanced gameplay mode may be considered, requiring players to provide the longest composition sequence.</p>
+<h2>Keyboard Shortcuts</h2>
+<p>Esc - Return to the main interface
+Backspace or right-click - Delete the number in the current (cursor-pointing) cell
+Number keys - Set the number in the current cell</p>
+<h2>Quickly Learn Group Theory</h2>
+<p>If you clicked into this game but don't know what group theory is, we recommend reading one of the following reputable books, which have Chinese translations:
+<em>Visual Group Theory</em>, by Nathan C. Carter
+<em>Algebra</em>, by Artin</p>
+<h2>Some Tricks</h2>
+<p>If you wish to lower the difficulty of the game initially, you can read the following tips. However, we encourage you to explore on your own!
+1. No row or column will have repeated numbers.
+2. If an element in a row (column) is exactly equal to the row (column) label, then its column (row) can be determined as the <em>identity element</em>.
+3. Prime order groups have only one type, which is the cyclic group. For cyclic groups, knowing what a non-identity element raised to the power of n is will determine the entire group.
+4. Try clicking on the header to swap indices to place identity elements, subgroups, etc., in comfortable positions. Sometimes, the color pattern can be enlightening!</p>
+    </div>
+</body>
+</html>

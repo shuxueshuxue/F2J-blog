@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question - F@J</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Noto Sans SC";
+            line-height: 1.8;
+            color: #333;
+            background: #fafafa;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 24px;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: #333;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 48px;
+            margin-bottom: 24px;
+            color: #1a1a1a;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 36px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            margin-top: 28px;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        ul, ol {
+            margin-left: 24px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            background: white;
+        }
+
+        th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #e5e5e5;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border: 1px solid #e5e5e5;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 24px 0;
+            border-radius: 4px;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        blockquote {
+            border-left: 4px solid #e5e5e5;
+            padding-left: 20px;
+            margin: 24px 0;
+            color: #666;
+        }
+
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 0.95rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            h3 {
+                font-size: 1.3rem;
+            }
+
+            .container {
+                padding: 40px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← 返回首页</a>
+
+        <h1>blog</h1>
+<ul>
+<li>[ ] finish the blog 📅 2024-12-30</li>
+</ul>
+<h1>Question</h1>
+<p>In the field of numeric ode/pde,
+Is there any theorem that indicates the limitation of a numerical format?
+I mean, like the uncertainty principal in physics where you will lose control of one thing when focusing on another thing.</p>
+<h1>Response</h1>
+<p>Yes, absolutely! There are several theorems and concepts in numerical ODE/PDE that highlight limitations and trade-offs, analogous to the uncertainty principle in physics. While not as universally applicable as the uncertainty principle, these ideas reveal inherent limitations in numerical approximations. Let's explore some key examples:</p>
+<p><strong>1. The Dahlquist Barrier (For Linear Multistep Methods for ODEs):</strong></p>
+<ul>
+<li><strong>Concept:</strong> This barrier concerns the stability and order of accuracy of linear multistep methods (LMMs) for solving ODEs. LMMs use information from previous time steps to advance to the next.</li>
+<li><strong>Theorem-like Result:</strong> The Dahlquist Barrier states that:<ul>
+<li><strong>Explicit LMMs:</strong> An explicit LMM cannot be both unconditionally stable (stable regardless of the step size) and have an order of accuracy greater than 2.</li>
+<li><strong>Implicit LMMs:</strong> An implicit LMM cannot have both A-stability (a strong form of unconditional stability) and an order of accuracy greater than 2.</li>
+</ul>
+</li>
+<li><strong>Limitation:</strong> This demonstrates a fundamental trade-off. You can't simultaneously achieve high accuracy and very robust stability with basic LMMs. If you want higher order accuracy you must pay the price with reduced stability properties (e.g., smaller time step restrictions).</li>
+<li><strong>Analogy:</strong> It's like trying to get a highly precise measurement (high order) with a shaky instrument (limited stability). You either need to sacrifice precision or make the instrument more robust.</li>
+</ul>
+<p><strong>2. The CFL Condition (Courant-Friedrichs-Lewy Condition, for PDEs):</strong></p>
+<ul>
+<li><strong>Concept:</strong> The CFL condition is a necessary condition for convergence of explicit time-stepping schemes for hyperbolic PDEs (like wave equations or advection equations).</li>
+<li><strong>Theorem-like Result:</strong> The CFL condition essentially states that the numerical domain of dependence of a numerical scheme must contain the physical domain of dependence of the PDE. Mathematically, it relates the time step (Δt) to the spatial step (Δx) and the wave speed (c) in the following form (for many cases):</li>
+</ul>
+<p><code>c * Δt / Δx ≤ CFL_number</code></p>
+<p>where <code>CFL_number</code> is a constant (often related to the numerical scheme's stability, typically less than or equal to 1).
+* <strong>Limitation:</strong> This highlights a trade-off between time step size and spatial discretization. If your spatial discretization is very fine (small Δx), you may need an even smaller time step (Δt) to maintain stability, leading to very computationally expensive simulations. Conversely, if you use a larger time step you may need a much coarser grid to maintain stability, which would be less accurate.
+* <strong>Analogy:</strong> Like trying to track a rapidly moving object. If you sample too infrequently in time (large Δt), you might completely miss its movement. Also, if you sample in the wrong location (poor spatial discretization), you won't be able to accurately reconstruct its trajectory.</p>
+<p><strong>3. Dispersion Error vs. Dissipation Error (For PDEs):</strong></p>
+<ul>
+<li><strong>Concept:</strong> Numerical schemes for PDEs introduce errors. Some of these are <em>dispersion</em> errors, which cause waves to propagate at the wrong speed or develop spurious oscillations. Others are <em>dissipation</em> errors, which cause waves to decay too rapidly or lose amplitude over time.</li>
+<li><strong>Limitation:</strong> Typically, you cannot completely eliminate both dispersion and dissipation errors simultaneously. When you design a scheme to reduce dispersion errors you may inadvertently increase dissipation errors, and vice-versa.</li>
+<li><strong>Analogy:</strong> It's like trying to build a perfect loudspeaker. You might focus on accurate reproduction of the fundamental frequencies (minimizing dispersion), but then you find that it's muffling the higher harmonics (increased dissipation). You can't get perfection in both areas.</li>
+</ul>
+<p><strong>4. Runge Phenomenon (For Interpolation/Approximation):</strong></p>
+<ul>
+<li><strong>Concept:</strong> When approximating a function with high-degree polynomials using equally spaced points, the interpolation error can oscillate wildly near the edges of the interval.</li>
+<li><strong>Limitation:</strong> This illustrates a limitation of using higher-degree polynomial approximations with equally spaced nodes. Even if we increase the number of interpolation points, the approximation may still perform poorly near the boundaries. We either need to use different interpolation nodes (e.g., Chebyshev nodes) or switch to piecewise polynomials (splines).</li>
+<li><strong>Analogy:</strong> It's like trying to force a complex shape into a high-degree polynomial. It can fit well in some parts but over-compensate (oscillate) in others.</li>
+</ul>
+<p><strong>5. Stability vs. Accuracy (General Concept):</strong></p>
+<ul>
+<li><strong>Concept:</strong> This is an overarching theme. There is often a trade-off between the stability properties of a numerical method and its order of accuracy.</li>
+<li><strong>Limitation:</strong> Higher-order schemes (more accurate) often require stricter time step limitations (less stable) or require special modifications to be made unconditionally stable. Conversely, very stable methods may have lower order of accuracy.</li>
+<li><strong>Analogy:</strong> Like trying to build a structure that is both very strong (stable) and very lightweight (accurate). You can optimize for one but it is difficult to have both to the highest degree.</li>
+</ul>
+<p><strong>Key Takeaway: Trade-offs are Inherent</strong></p>
+<p>The common thread in these limitations is that there are often trade-offs to be made. You can't achieve simultaneously all the desired properties, like arbitrary accuracy, unconditional stability, and low computational cost. The choice of method, discretization, and step size often involves compromises based on the specific problem and the available resources.</p>
+<p>These concepts serve as a caution when developing numerical schemes. They highlight the importance of understanding the limitations of a given method and choosing it appropriately to the specific problem you are trying to solve. While not a single, universal theorem like the Heisenberg uncertainty principle, they are critical for designing stable, accurate and efficient numerical solvers.</p>
+    </div>
+</body>
+</html>

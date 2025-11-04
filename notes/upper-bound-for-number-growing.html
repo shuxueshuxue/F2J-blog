@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>upper bound for number growing - F@J</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Noto Sans SC";
+            line-height: 1.8;
+            color: #333;
+            background: #fafafa;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 24px;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: #333;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 48px;
+            margin-bottom: 24px;
+            color: #1a1a1a;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 36px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            margin-top: 28px;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        ul, ol {
+            margin-left: 24px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            background: white;
+        }
+
+        th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #e5e5e5;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border: 1px solid #e5e5e5;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 24px 0;
+            border-radius: 4px;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        blockquote {
+            border-left: 4px solid #e5e5e5;
+            padding-left: 20px;
+            margin: 24px 0;
+            color: #666;
+        }
+
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 0.95rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            h3 {
+                font-size: 1.3rem;
+            }
+
+            .container {
+                padding: 40px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← 返回首页</a>
+
+        <h1>game #inequality</h1>
+<p><a href="Number%20growing.md">Number growing</a></p>
+<p>Now the task is to find and prove a proper upper bound (inequality) for the score. The score might be dependent on the initial number, thus could be used for "branch cutting" when searching for the highest possible score. Or a simple constant is also acceptable.</p>
+<p>We formulate the process as following:
+Let $n_0$ be the initial number, $n_i$ is the number obtained after $i$th operation. Each operation corresponds to a prime number $p_i$ (possibly negative) where $|p_i| \neq |p_j|, \forall i \neq j$. Easy to see that $|p_i p_{i+1}| \leq \max(n_i, n_{i+1})$.
+Then (notice the index, $p_i := n_i - n_{i-1}$)
+$$
+\begin{align}
+n_{i+1} &amp;= n_i + p_{i+1} \leq n_i + |p_{i+1}| \leq \max(n_i + n_{i+1}/|p_i|, n_i + n_i/|p_i|) \
+&amp;\text{Because } (|p_i|+1)/|p_i| \leq |p_i|/(|p_i|-1), \text{ we always have:} \
+n_{i+1} &amp;\leq \frac{|p_i|}{|p_i|-1}n_i \leq \left(\prod_{k=0}^i \frac{|p_k|}{|p_k|-1}\right)n_0
+\end{align}
+$$</p>
+<p>Notice $x/(x-1)$ is a decreasing function for $x \geq 1$, and most importantly, $|p_i| \leq n_{i+1}$ (<strong>This one needs proof</strong>, but loose. If we disable subtraction, then this is plainly true.).</p>
+<p>Now, instead of bound the final number using initial number, we bound the initial number (lower bound) using the final number:</p>
+<p>$$
+\frac{y}{\prod_{q_i &lt; y, q_i \text{ is prime}} \frac{q_i}{q_i-1}} = \left(\prod_{q_i &lt; y, q_i \text{ is prime}} \left(1-\frac{1}{q_i}\right)\right)y \leq x
+$$</p>
+<p>Where $y$ is the final number and $x$ is the initial. Notice we are not using the $p_i$ (operations, which is unknown) here. We are using <strong>all the prime numbers</strong> below $y$ in the product.
+We could optimize this result by optimizing $\alpha$ in $|p_i| \leq \alpha n_{i+1}$ which is set as 1 above.</p>
+<p>Using Merten's third theorem, for large $y$,
+$$
+\prod_{p \leq y} \left(1 - \frac{1}{p}\right) \sim \frac{e^{-\gamma}}{\ln y}
+$$
+where $\gamma$ is the Euler-Mascheroni constant.</p>
+<p>Thus a lower bound (very loosely) for initial number $x$ is approximately $\displaystyle \frac{e^{-\gamma}y}{\ln y}$.</p>
+<h2>Visualization</h2>
+<p><img alt="|700" src="upper%20bound%20for%20number%20growing.png" /></p>
+<pre><code class="language-python">import matplotlib.pyplot as plt
+import numpy as np
+from math import isqrt
+from sympy import sieve
+import math
+
+def product_factor(y):
+    &quot;&quot;&quot;
+    Compute the product of p/(p-1) for all primes p &lt;= y.
+    Utilizes sympy's sieve for efficient prime enumeration.
+    &quot;&quot;&quot;
+    if y &lt; 2:
+        return 1
+    primes = list(sieve.primerange(2, y + 1))
+    product = 1.0
+    for p in primes:
+        product *= p / (p - 1)
+    return product
+
+def smallest_initial(y):
+    &quot;&quot;&quot;
+    Compute the smallest initial number x such that
+    x &gt;= y / (product of p/(p-1) for all primes p &lt;= y)
+    &quot;&quot;&quot;
+    if y == 0:
+        return 0
+    prod = product_factor(y)
+    return y / prod
+
+def visualize():
+    x = np.arange(10, 1001)  # Final numbers from 10 to 1000
+
+    # Calculate y values: smallest initial x needed for each y
+    y = [smallest_initial(i) for i in x]
+
+    # Create the plot
+    plt.figure(figsize=(12, 6))
+    plt.plot(x, y, label=r'$x \geq \frac{y}{\prod_{p \leq y} \frac{p}{p-1}}$')
+    plt.title('Lower Bound of Initial Number vs Final Number')
+    plt.xlabel('Final Number (y)')
+    plt.ylabel('Minimum Initial Number (x)')
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+
+    # Show the plot
+    plt.show()
+
+if __name__ == &quot;__main__&quot;:
+    visualize()
+
+</code></pre>
+    </div>
+</body>
+</html>

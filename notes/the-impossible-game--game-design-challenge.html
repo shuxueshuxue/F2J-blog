@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The post - F@J</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Noto Sans SC";
+            line-height: 1.8;
+            color: #333;
+            background: #fafafa;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 24px;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: #333;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 48px;
+            margin-bottom: 24px;
+            color: #1a1a1a;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 36px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            margin-top: 28px;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        ul, ol {
+            margin-left: 24px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            background: white;
+        }
+
+        th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #e5e5e5;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border: 1px solid #e5e5e5;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 24px 0;
+            border-radius: 4px;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        blockquote {
+            border-left: 4px solid #e5e5e5;
+            padding-left: 20px;
+            margin: 24px 0;
+            color: #666;
+        }
+
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 0.95rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            h3 {
+                font-size: 1.3rem;
+            }
+
+            .container {
+                padding: 40px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← 返回首页</a>
+
+        <h1>game #gameDesign</h1>
+<h1>The post</h1>
+<p>🎮 The Impossible Game Design Challenge 🎲</p>
+<p>Can we create a multiplayer game where time doesn't matter?</p>
+<p>We're looking for innovative game designers to tackle an "impossible" challenge: designing a multiplayer board game with an unprecedented save/load mechanism that defies the conventional limits of time and player presence.</p>
+<p>The Core Challenge:
+Create a game where:
+- A player can leave mid-game, save their progress, and return days later
+- Other players continue playing normally in their absence
+- Upon return, the departed player resumes exactly where they left off
+- The returning player experiences the game as if no time has passed
+- The game maintains perfect consistency for all players</p>
+<p>Key Design Constraints:
+1. The game must be deterministic yet feel dynamic
+2. Player decisions must be meaningful but not create temporal paradoxes
+3. The mechanism should be seamless and natural, not feeling like a "patch"</p>
+<p>Theoretical Considerations:
+- How do we handle information revelation?
+- Can we create meaningful player interaction across different timeframes?
+- What mechanics would allow for both autonomy and interconnected gameplay?</p>
+<p>Think of it as designing a game that treats time as a game resource rather than a limitation. Like playing chess where one player exists in Monday while another plays on Friday, yet the game remains coherent.</p>
+<p>Are you up for this seemingly impossible challenge? Share your design concepts, no matter how wild or experimental they might seem!</p>
+<blockquote>
+<p>[!info]
+Note: This is a theoretical exercise that pushes the boundaries of game design thinking. While a perfect solution might not exist, the journey of exploring this problem could lead to fascinating new game mechanics.</p>
+</blockquote>
+<hr />
+<h1>Discussion</h1>
+<p>The game result $Y$ is a function of $\Sigma = {\sigma_1, \ldots, \sigma_n}$, the actions taken by all $n$ players.</p>
+<p>Where each $\sigma_i$ is a sequence of actions $\sigma_i^{(1)}, \sigma_i^{(2)}, \ldots$</p>
+<p><strong>Simple Case:</strong>
+For player 1, he's agnostic of all other players' actions in the game.</p>
+<p>Example: mine sweeping (the only interaction is the final score comparison)</p>
+<p><strong>direction 1</strong>
+<strong>extrapolation</strong> for player 1's behavior after his absence.</p>
+<p><strong>direction 2</strong>
+let game saving be part of the game mechanism</p>
+<hr />
+<h1>Solution 1: Predicate Game</h1>
+<p>Two players choose a "proposition" at the beginning of the game.</p>
+<p>Then the game is launched.</p>
+<p>One want to hold the proposition true, another wants to hold the negative proposition true.</p>
+<p>In each one's perspective, himself plays as $\exists$ , while the other plays as $\forall$ .</p>
+<p>When one player quits, the game "diverges" with each player's opponent replaced by an "optimal" bot.</p>
+<p>The "bot" is only an imagined entity (for illustrative purpose) but what actually carried out is:</p>
+<p>For both players now, if a "proof" of his version(positive or not) of the proposition doesn't exist, he automatically loses the game. Otherwise, he needs to provide a proof for the proposition. He wins the game if the proof passes the check.</p>
+<h3>Example</h3>
+<p>Consider the proposition "For any positive integer n, there exists m where m&gt;n."</p>
+<p>Player 1 wants to prove this true, while Player 2 wants to prove it false.</p>
+<p>If Player 1/2 leaves, the game diverges into two scenarios:
+For Player 1: They need to give a proof that such m exists.
+For Player 2: Automatically loses the game.</p>
+    </div>
+</body>
+</html>

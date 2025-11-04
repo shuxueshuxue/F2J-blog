@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Let it Run Multiple Rounds? - F@J</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Noto Sans SC";
+            line-height: 1.8;
+            color: #333;
+            background: #fafafa;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 24px;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: #333;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 48px;
+            margin-bottom: 24px;
+            color: #1a1a1a;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 36px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            margin-top: 28px;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        ul, ol {
+            margin-left: 24px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            background: white;
+        }
+
+        th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #e5e5e5;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border: 1px solid #e5e5e5;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 24px 0;
+            border-radius: 4px;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        blockquote {
+            border-left: 4px solid #e5e5e5;
+            padding-left: 20px;
+            margin: 24px 0;
+            color: #666;
+        }
+
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 0.95rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            h3 {
+                font-size: 1.3rem;
+            }
+
+            .container {
+                padding: 40px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← 返回首页</a>
+
+        <h2>AI-driven Decision-making Model Empowers Grassroots Governance (excerpts)</h2>
+<p><strong>Abstract:</strong> The article presents a proposal for an AI-driven decision-making model to enhance grassroots governance and democratic decision-making. It discusses the complexity of community decision-making and the challenges faced, such as information asymmetry and emotional biases. The proposed model aims to amplify the voices of the common people, enhance information transparency, and advance deliberative democracy. The model utilizes an AI agent for collecting opinions, mediating discussions, and providing policy consultation. A simulation was conducted with the Fudan University campus community, demonstrating the model's effectiveness in finding agreement-optimized solution.</p>
+<blockquote>
+<p>[!info]
+The following content is the <strong>opinion exchanging</strong> session of our research. We will focus on the algorithm detail.</p>
+</blockquote>
+<p>The following content is the <strong>opinion exchanging</strong> session of our research. We will focus on the algorithm detail.</p>
+<p>In the opinion exchanging session, CMs (community members) will send their value card generated to others and ranking cards received from others. Each CM send cards to 2 other CMs and rank 2 cards from 2 other CMs. The ranking instruction goes like this: "which opinion of the cards do you prefer"?</p>
+<p>The hard problem is how do we assign cards. To do this, we embed all the value cards into fixed length vector in order to capture their semantic meaning. Then we list some principals that's reasonable to follow:
+1. Diversity. The cards that CM receives should be distinct from his/her own.
+2. Fairness. The cards that CM receives should better be equally distant from his/her own.</p>
+<p>My initial thought is that we can group people into 3-groups, and the card exchanging goes internally in this group. And the principal for composing the 3-groups is to maximize the sum of the area of the triangles. This is a valid objective but hard to compute.</p>
+<p>Then I think about finding a distance transformation function $f: \mathbb{R}<em 0="0" _geq="\geq">{\geq 0} \rightarrow \mathbb{R}</em>$ that satisfies:</p>
+<p>$$
+\displaystyle{ \begin{aligned}&amp; \text{given } d <em 2="2">{ 1 } + d </em> + d <em 1="1">{ 3 } = C \ &amp; \text{minimum of } f \left( d </em> \right) + f \left( d <em 3="3">{ 2 } \right) + f \left( d </em>
+$$} \right) \text{ is achieved if and only if minimum of } S _{ A B C } \text{ is achieved}\end{aligned} </p>
+<p>And it's easy to see the minimum of $S_{ABC}$ is achieved if and only if $d_1=d_2=d_3$.
+By Jason inequality, convex functions satisfy this. And I also want $f$ to be decreasing, so</p>
+<p>$$
+f&gt;0, f'&lt;0, f''&gt;0
+$$</p>
+<p>Is the condition for a proper $f$. I finally made the choice $f(d)=e^{-d}$, which is simple and numerically stable.</p>
+<p>Set $D$ as the original distance matrix and $W$ the weight matrix for edges. Then we can formulate our card exchanging assignment problem as:</p>
+<p>$$
+\displaystyle{ \begin{aligned}&amp; \text{minimize } \sum <em i="i" j="j">{ i &lt; j } w </em> e ^{ - d <em j="j">{ i j } } \ &amp; \sum </em> w <em i="i" j="j">{ i j } = 2 , \forall i \ &amp; w </em>
+$$} \in \left[ 0 , 1 \right] , \forall i , j\end{aligned} </p>
+<p>Notice that it doesn't group CMs into triangles - but they group them into circles with length $\geq 3$ according to the classic <strong>2-factor theorem</strong>. And to exchange cards we just let the CM send and receive cards to his/her two neighbors. This is now a <strong>maximal weight 2-matching problem</strong> for a complete graph. I haven't yet found an efficient combinatorial method to tackle this (and this is an important to-do), so I choose to use a general linear programming solver and see how it performs.</p>
+<p>We generate 50 random points in an $N$-dimensional Euclidean space as simulated opinion card embeddings and run our algorithm on them.</p>
+<p>By visualizing the results, we could find the interesting distinction between different dimensions (2-dimensional vs 100-dimensional) Where the 2-dimensional case has several distinct circles but the 100-dimensional case has only a big Hamilton loop. The computation takes 0.03 seconds and doesn't seem to grow exponentially. Recall that each connected points in the generated graphs are actually far away in the original space.</p>
+<p><img alt="|600" src="AI-driven%20Decision-making%20Model%20Empowers%20Grassroots%20Governance%20(YICGG%202024).png" /><img alt="|600" src="AI-driven%20Decision-making%20Model%20Empowers%20Grassroots%20Governance%20(YICGG%202024)-1.png" /></p>
+<h3>Todo</h3>
+<ul>
+<li>[ ] Invent a benchmark</li>
+</ul>
+<h1>How to Let it Run Multiple Rounds?</h1>
+<p>The above formulation is Integer Linear Programming (ILP) which is generally NP-hard. When dealing with multiple rounds, we need to set $w_(ij)=0$ as extra condition for (i, j) paired appeared in the previous rounds. But here's the problem: can we still find a feasible solution? Consider the following case:</p>
+<p><svg width="400" height="200">
+  <circle cx="50" cy="50" r="10" fill=" #ADD8E6 " />
+  <text x="45" y="55" font-size="10" fill="black">1</text>
+  <circle cx="150" cy="50" r="10" fill="#ADD8E6" />
+  <text x="145" y="55" font-size="10" fill="black">2</text>
+  <circle cx="100" cy="120" r="10" fill="#ADD8E6" />
+  <text x="95" y="125" font-size="10" fill="black">3</text>
+  <line x1="57" y1="50" x2="143" y2="50" stroke="#D3D3D3" stroke-width="2" />
+  <line x1="107" y1="113" x2="57" y2="57" stroke="#D3D3D3" stroke-width="2" />
+  <line x1="93" y1="113" x2="143" y2="57" stroke="#D3D3D3" stroke-width="2" />
+  <circle cx="250" cy="50" r="10" fill="#90EE90" />
+  <text x="245" y="55" font-size="10" fill="black">4</text>
+  <circle cx="350" cy="50" r="10" fill="#90EE90" />
+  <text x="345" y="55" font-size="10" fill="black">5</text>
+  <circle cx="300" cy="120" r="10" fill="#90EE90" />
+  <text x="295" y="125" font-size="10" fill="black">6</text>
+  <line x1="257" y1="50" x2="343" y2="50" stroke="#D3D3D3" stroke-width="2" />
+  <line x1="307" y1="113" x2="257" y2="57" stroke="#D3D3D3" stroke-width="2" />
+  <line x1="293" y1="113" x2="343" y2="57" stroke="#D3D3D3" stroke-width="2" />
+</svg></p>
+<p>In the second round, a solution have to be look like a circle:</p>
+<p><img alt="circle_with_6_vertices|400" src="circle_with_6_vertices.png" /></p>
+<p>Then a third round will become impossible (consider why).</p>
+<p>And another flaw is that this algorithm is greedy - which means it optimizes each round independently. It doesn't consider the long-term effects on the feasibility of subsequent rounds.</p>
+<p>We know think of an alternative formulation that can hopefully solve the problems above.</p>
+<p>$$
+\displaystyle{ \begin{aligned}&amp; \text{minimize } \sum <em i="i" j="j">{ i &lt; j } w </em> e ^{ - d <em j="j">{ i j } } \ &amp; \sum </em>
+$$} w _{ i j } \geq K , \forall i\end{aligned} </p>
+<p>Issue: this formulation is vulnerable to collapse if a single node is significantly distant from all other nodes. Because the constraint $\sum_{j} w_{ij} \geq K$ only requires a minimum number of connections, the algorithm might prioritize connecting all nodes <em>to</em> the outlier to minimize the overall cost function (which is heavily influenced by the large distances to the outlier). This would result in a star-like graph centered on the outlier, which isn't a desirable outcome.</p>
+<p>$$
+\displaystyle{ \begin{aligned}&amp; \text{minimize } \sum <em i="i" j="j">{ i &lt; j } w </em>^2 e ^{ - d <em j="j">{ i j } } \ &amp; \sum </em>
+$$} w _{ i j } \geq K , \forall i\end{aligned} </p>
+<p>Issue: This formulation encourages the creation of many weak connections (small $w_{ij}$ values) rather than a few strong ones. Squaring the weights penalizes larger weights more heavily, leading to a solution where the algorithm distributes small weights across numerous edges to satisfy the constraint $\sum_{j} w_{i j} \geq K$ without incurring a large cost from any single edge. This might result in a highly connected but "weakly" connected graph where no individual edge represents a significant opinion exchange.</p>
+<p>$$
+\displaystyle{ \begin{aligned}&amp; \text{minimize } \sum <em i="i" j="j">{ i &lt; j } (w </em> + w <em i="i" j="j">{ i j }^2) e ^{ - d </em> \ &amp; \sum } <em i="i" j="j">{ j } w </em>
+$$} \geq K , \forall i\end{aligned} </p>
+<p>This is a slightly better option!</p>
+<p>This formulation can be understood as a combination of the previous two. The term $w_{ij}$ encourages stronger connections, while $w_{ij}^2$ still penalizes very large weights (but less aggressively than before). This aims to strike a balance between creating a few strong connections and allowing for more numerous weaker connections when necessary to satisfy the degree constraint. By combining both terms there's is less change for collapses and star formation.</p>
+<p>Now, several strategies can be used to determine a suitable threshold to build actual edges from $w_{ij}$:</p>
+<ol>
+<li>
+<p><strong>Adaptive Threshold:</strong> The threshold is dynamically adjusted based on the weight distribution in each round. For example, one could set $T$ to be the median, mean, or a specific percentile of the weights. This allows the algorithm to adapt to changes in the opinion landscape over time.</p>
+</li>
+<li>
+<p><strong>Connectivity-Based Threshold:</strong> The threshold is chosen to ensure that the resulting graph satisfies certain connectivity properties, such as a minimum average degree or a specific number of connected components. This approach helps to ensure a functional exchange structure.</p>
+</li>
+</ol>
+<p>Once the threshold is selected, the edge formation process involves comparing each weight $w_{ij}$ to $T$. If $w_{ij} &gt; T$, an edge is formed between nodes $i$ and $j$. If $w_{ij} \leq T$, the edge is not included in the graph. This binarization yields a graph representing the final assignment of card exchanges.</p>
+<p><img alt="graph|600" src="graph.png" /></p>
+<pre><code class="language-powershell">Average distance of ALL possible edges: 0.4834
+Problem solved successfully (status: optimal). Objective value: 28.780768175095037
+Using threshold T = 0.1094 (90th percentile of weights)
+Number of edges above threshold: 123
+Average distance of SELECTED edges: 0.7776
+Average degree of thresholded graph: 4.92
+Number of connected components in thresholded graph: 4
+</code></pre>
+<p>We notice that the average distance of SELECTED edges is significantly higher than average distance of ALL possible edges.
+Let's summarize the advantages again:
+- Efficient convex optimization
+- Arbitrarily many card exchange in a single round</p>
+<p><strong>To avoid orphan, we can set a lower bound for each node's degree when selecting edges.</strong>
+To further avoid star-like nodes, we can set an upper bound for the sum of edge weights of each node. But for now we just stick to this simple formulation.</p>
+<h2>Code</h2>
+<h4>2-matching Formulation</h4>
+<p>```python fold</p>
+<h1>xx</h1>
+<p>import numpy as np
+import pulp
+import networkx as nx
+import matplotlib.pyplot as plt
+import itertools</p>
+<h1>Generate 100 random vectors in 100-dimensional Euclidean space</h1>
+<p>n = 50
+dimension = 2
+vectors = np.random.rand(n, dimension)</p>
+<h1>Compute the 100x100 distance matrix</h1>
+<p>D = np.linalg.norm(vectors[:, np.newaxis] - vectors, axis=2)</p>
+<h1>Apply e^(-x) to each element of the distance matrix</h1>
+<p>W = np.exp(-D)</p>
+<h1>Generate all possible edges (upper triangle without the diagonal)</h1>
+<p>edges = list(itertools.combinations(range(n), 2))</p>
+<h1>Create a PuLP problem</h1>
+<p>prob = pulp.LpProblem("MaximizeOpinionExchanging", pulp.LpMinimize)</p>
+<h1>Decision variables: 1 if edge is selected, 0 otherwise</h1>
+<p>x = pulp.LpVariable.dicts("x", edges, lowBound=0, upBound=1, cat=pulp.LpBinary)</p>
+<h1>Objective function: minimize sum of e^(-d_ij) * x_ij</h1>
+<p>prob += pulp.lpSum(W[i, j] * x[(i, j)] for (i, j) in edges)</p>
+<h1>Constraints: each node must have exactly 2 edges</h1>
+<p>for s in range(n):
+    prob += pulp.lpSum(x[(i, j)] for (i, j) in edges if i == s or j == s) == 2</p>
+<h1>Debug</h1>
+<h1>print(prob)</h1>
+<h1>exit()</h1>
+<h1>Solve the problem</h1>
+<p>prob.solve()</p>
+<h1>Get the results</h1>
+<p>optimized_edges = [(i, j) for (i, j) in edges if pulp.value(x[(i, j)]) == 1]</p>
+<h1>Construct the resulting graph</h1>
+<p>H = nx.Graph()
+H.add_nodes_from(range(n))
+H.add_edges_from(optimized_edges)</p>
+<h1>Ensure we form cycles (each node degree should be exactly 2)</h1>
+<p>degree_check = all(degree == 2 for node, degree in H.degree())
+cycles = list(nx.cycle_basis(H)) if degree_check else []</p>
+<h1>Plot the resulting graph if valid</h1>
+<p>if degree_check:
+    pos = nx.spring_layout(H)
+    nx.draw(H, pos, with_labels=True, node_size=300, node_color='skyblue', edge_color='gray')
+    plt.show()</p>
+<h1>Output the results</h1>
+<p>print(degree_check, len(cycles), cycles[:5])  # Checking degree condition and sample of cycles</p>
+<pre><code>
+#### Convex Optimization Formulation
+
+```python fold
+import numpy as np
+import cvxpy as cp # Use cvxpy
+import networkx as nx
+import matplotlib.pyplot as plt
+import itertools
+
+# --- Setup: Generate data (Same as before) ---
+n = 50
+dimension = 2 # You can change this dimension
+vectors = np.random.rand(n, dimension)
+
+# Compute the 50x50 distance matrix
+D = np.linalg.norm(vectors[:, np.newaxis] - vectors, axis=2)
+
+# --- Calculate Average Distance for ALL Possible Edges ---
+if n &gt;= 2:
+    # Sum distances in the upper triangle (excluding diagonal)
+    total_distance_all = np.sum(np.triu(D, k=1))
+    num_all_edges = n * (n - 1) / 2
+    if num_all_edges &gt; 0:
+        avg_distance_all = total_distance_all / num_all_edges
+        print(f&quot;Average distance of ALL possible edges: {avg_distance_all:.4f}&quot;)
+    else:
+        print(&quot;Not enough nodes to form edges.&quot;)
+else:
+    print(&quot;Not enough nodes to calculate average distance.&quot;)
+# ---------------------------------------------------------
+
+
+# Generate edges (no self-loops due to combinations)
+edges = list(itertools.combinations(range(n), 2))
+# Create a mapping from edge tuple (i, j) to a linear index for cvxpy variable vector
+edge_map = {edge: i for i, edge in enumerate(edges)}
+num_edges = len(edges)
+
+# --- CVXPY Optimization ---
+
+# 1. Define Decision Variables
+w = cp.Variable(num_edges, name=&quot;w&quot;)
+
+# 2. Define the Objective Function
+coeffs = np.array([np.exp(-D[i, j]) for (i, j) in edges])
+objective_term1 = cp.sum(cp.multiply(w, coeffs))
+objective_term2 = cp.sum(cp.multiply(cp.square(w), coeffs))
+objective = cp.Minimize(objective_term1 + objective_term2)
+
+# 3. Define Constraints
+K = 2
+constraints = []
+constraints += [w &gt;= 0, w &lt;= 1]
+for node_idx in range(n):
+    connected_edge_indices = [
+        edge_map[edge] for edge in edges
+        if edge[0] == node_idx or edge[1] == node_idx
+    ]
+    if connected_edge_indices:
+         constraints.append(cp.sum(w[connected_edge_indices]) &gt;= K)
+    elif K &gt; 0 :
+         print(f&quot;Warning: Node {node_idx} has no edges. Constraint sum(w) &gt;= {K} cannot be satisfied.&quot;)
+
+
+# 4. Create and Solve the Problem
+problem = cp.Problem(objective, constraints)
+problem.solve(verbose=False)
+
+# --- Post-processing and Visualization ---
+
+# Check solver status
+if problem.status in [cp.OPTIMAL, cp.OPTIMAL_INACCURATE]:
+    print(f&quot;Problem solved successfully (status: {problem.status}). Objective value: {problem.value}&quot;)
+    solved_weights = w.value
+    if solved_weights is None:
+        print(&quot;Error: Solver reported success, but weights are None.&quot;)
+        weights = {}
+    else:
+        weights = {edge: solved_weights[edge_map[edge]] for edge in edges}
+
+    # Determine the threshold T (e.g., 90th percentile)
+    if weights:
+        weight_values = list(weights.values())
+        if weight_values:
+             if weight_values: # Check again after filtering
+                 T = np.percentile(weight_values, 90)
+             else:
+                 T = 0
+                 print(&quot;Warning: All weights are close to zero.&quot;)
+        else:
+            T = 0
+            print(&quot;Warning: No weights found in the solution despite solver success.&quot;)
+    else:
+        T = 0
+        print(&quot;Warning: Weights dictionary is empty.&quot;)
+
+    print(f&quot;Using threshold T = {T:.4f} (90th percentile of weights)&quot;)
+
+    # Build the graph based on the threshold T
+    H = nx.Graph()
+    H.add_nodes_from(range(n))
+    if weights:
+        selected_edges = [(i, j) for (i, j) in edges if (i, j) in weights and weights[(i, j)] &gt; T]
+        H.add_edges_from(selected_edges)
+    else:
+        selected_edges = []
+
+    num_selected_edges = len(selected_edges)
+    print(f&quot;Number of edges above threshold: {num_selected_edges}&quot;)
+
+    # --- Calculate Average Distance for SELECTED Edges ---
+    if num_selected_edges &gt; 0:
+        total_distance_selected = sum(D[i, j] for (i, j) in selected_edges)
+        avg_distance_selected = total_distance_selected / num_selected_edges
+        print(f&quot;Average distance of SELECTED edges: {avg_distance_selected:.4f}&quot;)
+    else:
+        print(&quot;No edges were selected above the threshold.&quot;)
+    # -----------------------------------------------------
+
+    # Print average degree
+    if H.number_of_nodes() &gt; 0:
+        degrees = [val for (node, val) in H.degree()]
+        if degrees:
+            print(f&quot;Average degree of thresholded graph: {np.mean(degrees):.2f}&quot;)
+        else:
+             print(&quot;Thresholded graph has nodes but no edges.&quot;)
+    else:
+        print(&quot;Graph has no nodes.&quot;)
+
+    # Check connected components
+    num_connected_components = nx.number_connected_components(H)
+    print(f&quot;Number of connected components in thresholded graph: {num_connected_components}&quot;)
+
+    # Visualize the graph
+    plt.figure(figsize=(10, 10))
+    pos = nx.spring_layout(H, k=0.5)
+    nx.draw(H, pos, with_labels=True, node_size=300, node_color='skyblue', edge_color='gray', font_size=8)
+    plt.title(f&quot;Graph from Thresholded Weights (T={T:.4f}, K={K}, Dim={dimension})&quot;)
+    plt.savefig(&quot;graph.png&quot;)
+    plt.close()
+
+elif problem.status in [cp.INFEASIBLE, cp.INFEASIBLE_INACCURATE]:
+    print(f&quot;Problem is infeasible (status: {problem.status}). Check constraints, especially K={K}.&quot;)
+elif problem.status in [cp.UNBOUNDED, cp.UNBOUNDED_INACCURATE]:
+     print(f&quot;Problem is unbounded (status: {problem.status}).&quot;)
+else:
+    print(f&quot;Solver failed with status: {problem.status}&quot;)
+
+</code></pre>
+    </div>
+</body>
+</html>

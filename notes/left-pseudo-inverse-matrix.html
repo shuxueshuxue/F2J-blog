@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear least square problem - F@J</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Noto Sans SC";
+            line-height: 1.8;
+            color: #333;
+            background: #fafafa;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 24px;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: #333;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 48px;
+            margin-bottom: 24px;
+            color: #1a1a1a;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 36px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            margin-top: 28px;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        ul, ol {
+            margin-left: 24px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            background: white;
+        }
+
+        th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #e5e5e5;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border: 1px solid #e5e5e5;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 24px 0;
+            border-radius: 4px;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        blockquote {
+            border-left: 4px solid #e5e5e5;
+            padding-left: 20px;
+            margin: 24px 0;
+            color: #666;
+        }
+
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 0.95rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            h3 {
+                font-size: 1.3rem;
+            }
+
+            .container {
+                padding: 40px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← 返回首页</a>
+
+        <h1>linearAlgebra</h1>
+<p>![[left pseudo matrix.mp3]]</p>
+<p>Left pseudo inverse works for matrices with <em>full column rank</em> (so must be <em>tall</em>).</p>
+<p>We denote it by $A†$ (A dagger). It satisfies $A† A = I$ .</p>
+<p>One way to compute it is: $A† = (A^TA)^{-1}A^T$ (also called Moore-Penrose pseudo-inverse)</p>
+<p>Another way to compute it is through SVD(singular value decomposition), which is more numerically stable:</p>
+<p>![[Pasted image 20221105111004.png]]</p>
+<p>$$A = UΣVᵀ$$</p>
+<p>where U and V are <em>orthogonal</em> matrices, and Σ is a diagonal matrix of singular values. The pseudo-inverse is then given by:</p>
+<p>$$A^† = VΣ⁻¹Uᵀ$$</p>
+<p>where $Σ⁻¹$ is obtained by taking the reciprocal of the non-zero singular values in Σ and transposing the resulting matrix.</p>
+<h1>Linear least square problem</h1>
+<p>The problem can be formulated as:</p>
+<p>$$\min_x |Ax - b|_2^2$$</p>
+<p>The solution to this minimization problem, often called the least squares solution, can be found using the normal equations:</p>
+<p>$$A^TAx = A^Tb$$</p>
+<p>The matrix $A^TA$ is guaranteed to be invertible if $A$ has full column rank, and the least squares solution is given by:</p>
+<p>$$x = (A^TA)^-1A^Tb$$</p>
+<p>This solution is equivalent to multiplying both sides of the equation $Ax = b$ by the left pseudo-inverse $A†$ of $A$, which yields:</p>
+<p>$$A†Ax = A†b \Rightarrow x = A†b$$
+⚠️ (This can be a bit confusing here. Because the original equation $Ax=b$ may have no solution, in that case, the solution of new equation $A†Ax = A†b$ is <em>NOT</em> the solution of the original equation.)</p>
+<p>The computation of $(A^TA)^{-1}A^T$ can be numerically unstable if $A^TA$ is ill-conditioned (typically appear when $det(A)$ is small, like Hibbert matrix). In such cases, the SVD-based method for computing the pseudo-inverse provides a more numerically stable solution.</p>
+    </div>
+</body>
+</html>

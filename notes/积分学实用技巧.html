@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>积分学实用技巧 - F@J</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Noto Sans SC";
+            line-height: 1.8;
+            color: #333;
+            background: #fafafa;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 24px;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: #333;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 48px;
+            margin-bottom: 24px;
+            color: #1a1a1a;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 36px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            margin-top: 28px;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        ul, ol {
+            margin-left: 24px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            background: white;
+        }
+
+        th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #e5e5e5;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border: 1px solid #e5e5e5;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 24px 0;
+            border-radius: 4px;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        blockquote {
+            border-left: 4px solid #e5e5e5;
+            padding-left: 20px;
+            margin: 24px 0;
+            color: #666;
+        }
+
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 0.95rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            h3 {
+                font-size: 1.3rem;
+            }
+
+            .container {
+                padding: 40px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← 返回首页</a>
+
+        <center><font size=6>积分学实用技巧</font></center>
+
+<p><strong>Abstract.</strong> This article introduces some practical techniques that can be found useful when tackling certain integral problems. Though not particularly interesting or the best solution, they are indeed widely used and frequently appear in all sorts of tests and examinations. All of them are well-known so we skip their proof and will only focus on some carefully-selected examples.</p>
+<p><strong>A1.</strong> 证明$$\int_0^\pi xf(sinx)\ dx=\frac{\pi}{2}\int_0^\pi f(sinx)\ dx$$
+经典证法是用所谓的“<strong>区间再现</strong>”，令 $I$ 为式子左边， 用 $\pi - x$ 代换 $x$ 得到：
+$$\begin{split}
+I&amp;=\int_\pi^{0}(\pi-x)f(sin(\pi-x))d(\pi-x) \
+&amp;=\int_0^{\pi}(\pi-x)f(sinx)dx \
+&amp;=\int_0^{\pi}\pi f(sinx)dx - I\
+\Rightarrow I&amp;= \frac{\pi}{2}\int_0^\pi f(sinx)\ dx
+\end{split}$$
+注意到式子可以变形为
+$$\frac{\pi}{2}=\frac{\int_{0}^{\pi}xf(x)\ dx}{\int_{0}^{\pi}f(x)\ dx}$$
+不妨与（平板）<strong>重心计算公式</strong>对比
+$$G_x=\frac{\int_{x_1}^{x_2}xf(x)\ dx}{\int_{x_1}^{x_2}f(x)\ dx}$$
+由重心计算公式可以迅速检验本题答案。因为对称性，$f(sinx)$ 在 $[0, \pi]$ 上这一段的重心必然落在 $x=\dfrac{\pi}{2}$ 上。</p>
+<p><strong>A2.</strong> 求解$$\int\kern{-8pt}\int_{\sum} \kern{-31mu} \bigcirc \bf\;xzdxdy+xydydz+ydzdx$$
+其中$\sum$是平面$x=0,y=0,z=0,x+y+z=1$所围成的空间区域的整个边界曲面的外侧。
+解：$$\begin{split}
+&amp;\int\kern{-8pt}\int_{\sum} \kern{-31mu} \bigcirc \bf\;xzdxdy+xydydz+yzdzdx \ =&amp;\iiint x+y+z\ dxdydz \ (Gauss公式)\
+=&amp;\ 3\iiint x\ dxdydz\
+=&amp;\ 3\times G_x\times V_{\sum}\
+=&amp;\ 3\times \frac{0+0+0+1}{4}\times \frac{1}{6}\
+=&amp;\ \frac{1}{8}
+\end{split}$$
+其中把三重积分转化为了重心坐标与体积的乘积，而<strong>四面体重心坐标计算公式</strong>告诉我们重心就是顶点的算术平均（事实上，对于任意多面体我们可以对其进行单纯剖分，再计算所有四面体重心的加权平均）。这样，我们不用化多重积分为多次积分就能完成整道题目的计算。这个技巧适用于被积函数是一次，积分区域比较简单的情形。</p>
+<p><strong>B1.</strong> 设$f(x)$在区间$[a, b]$上有连续的导函数，且$f(a)=0$，证明$$\int_a^{b}f^2(x)dx\le\frac{(b-a)^2}{2}\int_a^{b}f'^2(x)dx$$
+1️⃣ 利用 Cauchy 不等式的解法：
+$$\begin{split}
+f^2(x)&amp;=(\int^x_af'(x)\cdot 1\ dx)^2 \
+&amp;\le \int_a^xf'^2(x)dx \cdot \int_a^x1\ dx\
+&amp;\le \int_a^bf'^2(x)dx \cdot (x-a)
+\end{split}$$
+两边同时在$[a, b]$上积分即得要证式子。</p>
+<p>2️⃣ 使用 Euler-Lagrange 方程<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>求固定端点的泛函极值。注意到虽然$f(b)$未知，但可以把它看成一个待定的常数，因此符合 Euler-Lagrange 方程的使用条件。</p>
+<blockquote>
+<p>Recall
+设 $F(y,y',x)$ 是三个独立变量 $x, y(x), y'(x)$ 在区间 $[x_0, x_1]$ 上的已知函数，且二阶可微，其中 $y, y'$ 是 $x$ 的未知函数，则泛函$$J[y] = \int_{x_0}^{x_1} F(x,y,y')dx$$
+取极值的必要条件为$$
+\dfrac{\partial F}{\partial y} - \dfrac{d}{dx}\left(\dfrac{\partial F}{\partial y'}\right) = 0$$
+上式即为 <strong>Euler-Lagrange 方程</strong></p>
+</blockquote>
+<p>本题移项之后就是一个计算 $\displaystyle\int_a^{b}f^2(x)-\frac{(b-a)^2}{2}f'^2(x)\ dx$ 的极值的问题。令 $y=f(x)$ 代入 Euler-Lagrange 方程得到$$0=2y-[(b-a)^2y']'=2y-(b-a)^2y''$$
+解这个二阶线性微分方程得到 $$y=c_1e^{\frac{\sqrt{2}}{b-a}x}+c_2e^{\frac{\sqrt{2}}{a-b}x}$$
+将 $f(a)=0$ 代入可以发现 $c_1$ 与 $c_2$ 异号或同时为0。
+把 $y$ 代入原式得到 $$\begin{split}
+\int_a^{b}f^2(x)-\frac{(b-a)^2}{2}f'^2(x)\ dx=&amp;\int_a^{b}(c_1e^{\frac{\sqrt{2}}{b-a}x}+c_2e^{\frac{\sqrt{2}}{a-b}x})^2-\frac{(b-a^2)}{2}(\frac{\sqrt2 C_1}{b-a}e^{\frac{\sqrt{2}}{b-a}x}+\frac{\sqrt2 C_2}{a-b}e^{\frac{\sqrt{2}}{a-b}x})^2 dx\
+=&amp;\int_a^b4c_1c_2\ dx \
+=&amp;\ 4c_1c_2(b-a)\
+\le&amp;\ 0
+\end{split}$$
+其中等号成立当且仅当 $f(x)\equiv0$。</p>
+<p><strong>B2.</strong> 设函数 $f(x)$ 在 $[0, 1]$ 上连续，且 $\displaystyle\int_0^1f(x)dx=1$，证明：
+$$\int_0^1(1+x^2)f^2(x)dx\ge\frac{4}{\pi} \tag{1}$$
+1️⃣ 利用 Cauchy 不等式的解法： $$\begin{split}
+&amp; \int_0^1\frac{1}{1+x^2}dx \cdot \int_0^1(1+x^2)f^2(x)dx \
+\ge&amp;\int_0^1f(x)dx=1 \
+\Rightarrow&amp; \int_0^1(1+x^2)f^2(x)dx\ge \frac{1}{\int_0^1\frac{1}{1+x^2}dx}=\frac{4}{\pi}
+\end{split}$$
+2️⃣ 设 $F(x)=\int_0^xf(x)$ ，则 $F(0)=0, F(1)=1, f(x)=F'(x)$ ，转化为了一个变分问题。设 $y=F(x)$ ，代入 Euler-Lagrange 方程得到 $$\begin{split}
+&amp;[(1+x^2)y']'=0 \
+\Rightarrow&amp;\ (1+x^2)y'=C_1 \
+\Rightarrow&amp;\ y=C_1arctan\ x+C_2
+\end{split}$$
+代入边界条件即可确定 $C_1=\dfrac{4}{\pi}, C_2=0$，再将 $y$ 代入 $(1)$ 式左边，此时取得极值 $\dfrac{4}{\pi}$ 。</p>
+<p><strong>B3.</strong> 设 $f(x)$ 是定义在区间 $[0, 1]$ 上的二次可微函数，若 $f(0)=f(1)=f'(1)=0$，$f'(0)=1$，求证：$$\int_0^1[f''(x)]^2dx\ge4$$
+1️⃣ 取 $c\in[0, 1]$，考虑如下积分 $$\begin{split}
+&amp;\int_0^1(x-c)f''(x)dx \
+=&amp;\int_0^1xf''(x)dx-\int_0^1cf''(x)dx \
+=&amp;\ xf'(x)\bigg|^1_0-f(x)\bigg|^1_0-cf'(x)\bigg|^1_0\
+=&amp;\ c
+\end{split}$$
+再利用 Cauchy 不等式
+$$\begin{split}
+\int_0^1(x-c)^2dx\cdot\int [f''(x)]^2dx&amp;\ge [\int_0^1(x-c)f''(x)dx]^2 \
+\int [f''(x)]^2dx&amp;\ge \frac{c^2}{c^2-c+\frac{1}{3}} \
+\end{split}$$
+取 $c=\dfrac{2}{3}$ 即可。</p>
+<p>2️⃣ 经埃尔米特插值得到 $p(x)=(1-x)^2-(1-x)^3=x(1-x)^2$ 满足题设条件，且$$\int_0^1[p''(x)]^2=4$$
+于是原问题转化为证明式子 $$\int_0^1[f''(x)]^2-[p''(x)]^2dx\ge0$$
+在接下来的代数变形中，由于对于 $p(x)$ 我们有完全的了解，而对于 $f(x)$ 只知道原函数和一阶导数的信息，因此总是用分部积分对 $p(x)$ 求导，$f(x)$ 积分。
+$$\begin{split}
+&amp;\int_0^1f''^2-p''^2dx \
+=&amp;\int_0^1(f''-p'')^2+2f''p''-2p''^2dx \
+=&amp;\ I+\int_0^12p''d(f')-\int_0^12p''^2dx\
+=&amp;\ I+2p''f'\bigg|^1_0 -\int_0^12p'''f'dx-8\
+=&amp;\ I-\int_0^12p'''df\
+=&amp;\ I-2p'''f\bigg|_0^1+\int_0^12p''''f\ dx\
+=&amp;\ I
+\end{split}$$
+其中 $\displaystyle I=\int_0^1(f''-p'')^2dx$ 。
+最后一步是由于除 $I$ 外其余两项均为0。由于 $I$ 是平方的积分，因此大于等于0，原不等式得证。可以看出这个证明中其实也<strong>隐含了变分法的思路</strong>。与极值函数做差再使用分部积分，这与一般证明 Euler-Lagrange 方程的方法是一致的。</p>
+<p>3️⃣ 我们当然也可以用变分法来做这一道题。但是因为涉及高阶导数，我们需要使用 Euler-Lagrange 方程的推广。</p>
+<blockquote>
+<p>泛函$$J[y] = \int_{x_0}^{x_1} F(x,y,y',...,y^{(n)})dx$$
+取极值的必要条件为 <strong>Euler-Poisson 方程</strong>$$
+\dfrac{\partial F}{\partial y} - \dfrac{d}{dx}\left(\dfrac{\partial F}{\partial y'}\right) + ... + (-1)^n\dfrac{d^n}{dx^n}\left(\dfrac{\partial F}{\partial y^{(n)}}\right)= 0$$</p>
+</blockquote>
+<p>在此题中令 $\displaystyle F(x,y,y',y'') = y''^2$，代入 Euler-Poisson 方程得到 $$\frac{d^2}{dx^2}[y''(x)]=y^{(4)}=0$$
+可设 $y=c_1x^3+c_2x^2+c_3x+c_4$，代入边界条件，显然这就是解法2中的 $p(x)$。</p>
+<p><strong>C.</strong>  设 $f(x)$ 可导，求 $\displaystyle \frac{d}{dx}\int_0^xtf(x^2-t^2)dt$。
+1️⃣ 令 $u=x^2-t^2$，则 $du=-2tdt$，于是 $$\begin{split}
+&amp;\int_0^xtf(x^2-t^2)dt \
+=&amp;-\frac{1}{2}\int_0^xf(x^2-t^2)d(x^2-t^2) \
+=&amp;-\frac{1}{2}\int_{x^2}^{0}f(u)du\
+=&amp;\frac{1}{2}\int_0^{x^2}f(u)du
+\end{split}$$
+这时候应用对变限积分求导法则 $\displaystyle \frac{d}{dx}\frac{1}{2}\int_0^{x^2}f(u)du = xf(x^2)$。</p>
+<p>2️⃣ 我们也可以直接应用 <strong>Leibniz integral rule</strong>，即含参积分的求导法则 $$\begin{split}
+&amp;\dfrac{d}{dx}\int_0^xtf(x^2-t^2)dt \
+=&amp;\ xf(0)+\int_0^x2xtf'(x^2-t^2)dt \
+=&amp;\ xf(0)-x\int_0^xf'(x^2-t^2)d(x^2-t^2)\
+=&amp;\ xf(0)-xf(x^2-t^2)\bigg|^x_0\
+=&amp;xf(x^2)
+\end{split}$$
+与解一的巧妙换元相比，解二的优势在于不依赖于被积函数的特殊形式，直接计算即可。但解一实际上对 $f(x)$ 的要求减少了，仅要求其连续即可，而解二却要求可导，因此它们各有优劣。</p>
+<p><strong>D.</strong> 计算 $$\oint_L\frac{xdy-ydx}{x^2+y^2}$$
+其中 $L$ 为一条无重点，分段光滑且不经过原点的连续闭曲线，$L$ 的方向为逆时针方向。
+1️⃣ 记 $L$ 所围成的闭区域为 $D$，令 $P=\dfrac{-y}{x^2+y^2}$, $Q=\dfrac{x}{x^2+y^2}$，当 $(x,y)\ne (0, 0)$ 时，$$\frac{\partial Q}{\partial x}-\frac{\partial P}{\partial y}=\frac{y^2-x^2}{(x^2+y^2)^2}-\frac{y^2-x^2}{(x^2+y^2)^2}=0$$
+case 1. 若 $(0, 0)\notin D$ ，
+由 $Green$ 公式知 $$\oint\frac{xdy-ydx}{x^2+y^2}=\iint \frac{\partial Q}{\partial x}-\frac{\partial P}{\partial y}dxdy=0$$
+case 2. 若 $(0, 0)\in D$，
+作位于 $D$ 内圆周 $C:x^2+y^2=r^2$，
+记 $\partial D'$ 由 $L$ 和 $C$ 所围成，应用 $Green$ 公式，得 $$\oint_L\frac{xdy-ydx}{x^2+y^2}-\oint_C\frac{xdy-ydx}{x^2+y^2}=\iint_{\partial D'}\frac{\partial Q}{\partial x}-\frac{\partial P}{\partial y}dxdy=0$$
+因此 $$\oint_L\frac{xdy-ydx}{x^2+y^2}=\oint_C\frac{xdy-ydx}{x^2+y^2}=\int_0^{2\pi}\frac{r^2cos^2\theta+r^2sin^2\theta}{r^2}d\theta=2\pi$$
+2️⃣ 根据被积函数的特点我们可以把它转化为复积分来做。注意到$$\oint_L\frac{1}{z}dz=\oint_L\frac{1}{x+yi}d(x+yi)=\oint\frac{xdx+ydy}{x^2+y^2}+\frac{xdy-ydx}{x^2+y^2}i$$
+取其虚部$$\oint_L\frac{xdy-ydx}{x^2+y^2}=Im{\oint_L\frac{1}{z}dz}$$
+由于 $\dfrac{1}{z}$ 只有 $z=0$ 这一个奇点，且留数为1，根据<strong>留数定理</strong>，若闭曲线 $L$ 围成区域中不包含 $(0, 0)$，积分值为0，包含 $(0, 0)$，积分值为 $2\pi i$，取其虚部即得 $2\pi$。</p>
+<p><strong>E.</strong> 计算 $$\int_0^1ln\ x \cdot ln(1-x)\ dx$$
+我们用<strong>级数展开</strong> $$\begin{split}
+&amp;\int_0^1ln\ x \cdot ln(1-x)\ dx \
+=&amp;\int_0^1\sum_{n=1}^{\infty}\frac{x^n}{n}lnx\ dx \
+=&amp;-\sum_{n=1}^{\infty}\frac{1}{n(n+1)^2}\
+=&amp;\sum_{n=1}^{\infty}\frac{1}{n}-\frac{1}{n+1}-\frac{1}{(n+1)^2}\
+=&amp;\ 1-(\sum_{n=1}^{\infty}\frac{1}{n^2}-1)\
+=&amp;\ 2-\frac{\pi^2}{6}
+\end{split}$$
+本题的背景是著名的<strong>巴塞尔问题</strong>，事实上，该积分的计算可以归结为 $I=\displaystyle\int_0^1\frac{log(1-x)}{x}dx=\sum_{n=1}^{\infty}\frac{1}{n^2}$ 的计算。若能找到另一种计算积分 $I$ 的方法，就得到了巴塞尔问题的一个证明。而那种方法的确存在。我们令 $$f(a)=\int_0^1\frac{log(x^2-2xcosa+1)}{x}dx$$
+只要证明 $f(a)=-\dfrac{(a-\pi)^2}{2}+\dfrac{\pi^2}{6}$。
+利用等式 $(x^2-2xcosa+1)(x^2+2xcosa+1)=x^4-2x^2cos2a+1$ 我们有 $$f(a/2)+f(\pi-a/2)=\int_0^1\frac{log(x^4-2x^2cos2a+1)}{x}dx=\frac{1}{2}\int\frac{log(t^2-2tcosa+1)}{t}dt=\frac{1}{2}f(a)$$
+于是得到了函数方程 $f(a/2)+f(\pi-a/2)=\dfrac{1}{2}f(a)$，对其求导两次得 $f''(a/2)+f''(\pi-a/2)=2f''(a)$，由于 $f''$ 是在闭区间 $[0, 2\pi]$ 上的连续函数，从而 $f''$ 在该区域有最大值 $M$ 与最小值 $m$，设 $f''(a_0)=M$ 对于某个 $a_0\in [0, 2\pi]$ 成立，在等式中设 $a=a_0$ 有 $$f''(a_0/2)+f''(\pi-a_0/2)=2f''(a_0)=2M$$
+但是由于 $f''(a_0/2),f''(\pi-a_0/2)$ 都小于 $M$，从而只能都等于 $M$，继续这样的迭代，就有$$\lim_{n\to+\infty}f''(a_0/2^n)=f''(0)=M$$
+类似地，我们也有 $f''(0)=m$，从而 $M=m$，$f''$ 为常函数，则 $f$ 必然是二次函数，设 $f(a)=\alpha a^2+\beta a +\gamma$，代入函数方程，并且注意到 $f'(\dfrac{\pi}{2})=\dfrac{\pi}{2}$，可以确定 $f(a)=-\frac{1}{2}a^2+\pi a - \dfrac{\pi^2}{3}=-\dfrac{(a-\pi)^2}{2}+\dfrac{\pi^2}{6}$。</p>
+<p><strong>F.</strong> 计算 $\displaystyle \int_0^2[e^x]\ dx$，其中 $[\ ]$ 表示向下取整
+1️⃣ 我们分割积分区域，使得在每个区域上被积函数都是常数。
+当 $0\le x\le 2$ 时，$1\le e^x\le e^2&lt; 8$，有 $$\begin{split}
+\int_0^2[e^x]dx&amp;=\int_0^{ln2}[e^x]dx+\int_{ln2}^{ln3}[e^x]dx+\dots+\int^2_{ln7}[e^x]dx \
+&amp;=\int_0^{ln2}1dx+\int_{ln2}^{ln3}2dx+\dots+\int_{ln7}^{2}7dx \
+&amp;=ln2+2(ln3-ln2)+3(ln4-ln3)+\dots+7(2-ln7)\
+&amp;=14-(ln2+ln3+\dots+ln7)\
+&amp;=14-ln7!
+\end{split}$$
+2️⃣ 我们也可以应用 <strong>Euler-Maclaurin 求和公式</strong>，即如果 $f(x)$ 在 $[a,b]$ 上连续可导，其中 a, b 为整数，则$$\sum_{k=a}^{b}f(k)=f(a)+\int_a^bf(x)+(x-[x])f'(x)\ dx$$</p>
+<p>令 $a=1,b=[e^2]=7,f(x)=lnx$，带入式子得到 $$\begin{split}
+\sum_{k=1}^{7}lnk=&amp;\int_1^7lnx\ dx+\int_1^7(x-[x])\frac{1}{x}dx \
+=&amp;\ x(lnx-1)\bigg|^7_1+6-\int_1^7[x]d(lnx) \
+=&amp;\ 7ln7-\int_0^{ln7}[e^t]\ dt\
+=&amp;\ 7ln7-\int_0^2[e^x]\ dx+\int_{ln7}^{2}[e^x]\ dx\
+=&amp;\ 7ln7-\int_0^2[e^x]dx+14-7ln7\
+\Rightarrow \int_0^2[e^x]dx=&amp;\ 14-ln7!
+\end{split}$$</p>
+<center><font size=6>参考文献</font></center>
+
+<p>[1] The Connection between the Basel Problem and a Special Integral, Haifeng Xu, Jiuru Zhou, 2014</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>变分法详见 [[mathematics modeling 数学建模]]&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+    </div>
+</body>
+</html>
