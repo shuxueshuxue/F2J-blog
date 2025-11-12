@@ -140,12 +140,16 @@
 <hr />
 <h2>活动码太小了（演讲者视角）</h2>
 <p><strong>问题</strong>：数字活动码字号小、颜色淡，演讲者在台上念给学生听时需要眯眼找。</p>
+<img src="pq-activity-code.jpg" alt="PQ问答活动码显示过小" style="width: 100%; max-width: 400px; margin: 24px 0; border: 1px solid #e5e5e5;">
+<p style="color: #999; font-size: 0.9rem; margin-top: -16px; margin-bottom: 24px;">活动码"6889116"在屏幕上字号较小，演讲者需要凑近才能清楚地念出</p>
 <p><strong>为何是问题</strong>：典型 Paper-Cut。核心任务"分享活动码"本应零阻力，却要"找半天"。</p>
 <p><strong>团队为何犯错</strong>：可能在电脑屏幕上开发时觉得"够大了"，没在真实讲台场景测试（知识的诅咒）。</p>
 <p><strong>改进方案</strong>：活动码放大至屏幕中央（48pt），提供二维码扫码进入。</p>
 <hr />
 <h2>题目列表滑动卡顿（演讲者视角）</h2>
 <p><strong>问题</strong>：课程管理界面中，题目列表滑动时有明显卡顿。每个题目长度不固定（从短标题到长问题描述），滑动时有跳跃感。</p>
+<img src="pq-scroll-bug.jpg" alt="PQ问答题目列表可变高度" style="width: 100%; max-width: 400px; margin: 24px 0; border: 1px solid #e5e5e5;">
+<p style="color: #999; font-size: 0.9rem; margin-top: -16px; margin-bottom: 24px;">课程管理界面显示多个问题，每条长度差异很大（从一行到多行），导致滑动时出现跳帧</p>
 <p><strong>为何是问题</strong>：违背效率与反馈原则。卡顿 = "这软件不靠谱"的潜意识印象。演讲者管理题目时体验差。</p>
 <p><strong>团队为何犯错</strong>：前端实现 bug - 可变高度列表项未正确处理虚拟滚动或高度计算，导致重新布局时出现跳帧。测试时可能只用了固定长度的示例数据。</p>
 <p><strong>改进方案</strong>：使用虚拟滚动库（如 react-window）处理可变高度列表，或预先测量每项高度缓存。</p>
