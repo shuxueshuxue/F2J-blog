@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo Alpha 版本发布 - F@J</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Noto Sans SC";
+            line-height: 1.8;
+            color: #333;
+            background: #fafafa;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 24px;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: #333;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 48px;
+            margin-bottom: 24px;
+            color: #1a1a1a;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 36px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            margin-top: 28px;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        ul, ol {
+            margin-left: 24px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        strong {
+            font-weight: 600;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        hr {
+            margin: 40px 0;
+            border: none;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        blockquote {
+            border-left: 4px solid #e5e5e5;
+            padding-left: 20px;
+            margin: 24px 0;
+            color: #666;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 24px 0;
+            border-radius: 4px;
+        }
+
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 0.95rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            h3 {
+                font-size: 1.3rem;
+            }
+
+            .container {
+                padding: 40px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← 返回首页</a>
+        
+        <p><img alt="Echo Alpha Release" src="echo-alpha-release.png" /></p>
+<hr />
+<h2>Alpha 阶段总结报告</h2>
+<h3>产品交付：新闻稿</h3>
+<p><strong>Echo Alpha 版本发布：让内心的声音陪你写作</strong></p>
+<p>我们很高兴宣布 Echo 的 Alpha 版本正式完成。这是一个受《极乐迪斯科》启发的创新日记应用，让你的内心声音在写作时实时评论你的思绪。</p>
+<p><strong>Alpha 阶段核心成果：</strong></p>
+<ol>
+<li><strong>实时声线评论系统</strong></li>
+<li>基于能量池的智能触发机制</li>
+<li>中英文双语支持</li>
+<li>
+<p>水彩笔刷风格的短语高亮效果</p>
+</li>
+<li>
+<p><strong>数据持久化与用户系统</strong></p>
+</li>
+<li>JWT 认证机制</li>
+<li>SQLite 数据库存储（sessions、用户偏好、每日图片、分析报告）</li>
+<li>从 localStorage （访客模式）到数据库的平滑迁移</li>
+<li>
+<p>日历功能：保存和加载历史条目</p>
+</li>
+<li>
+<p><strong>卡组系统（Deck System）</strong></p>
+</li>
+<li>系统预设卡组 + 用户自定义</li>
+<li>Fork 机制：用户可以复制并修改系统卡组</li>
+<li>完整的 CRUD 操作界面</li>
+<li>
+<p>社区分享功能</p>
+</li>
+<li>
+<p>Timeline</p>
+</li>
+<li>
+<p>每日自动生成时间线图片</p>
+</li>
+<li>
+<p><strong>智能分析功能</strong></p>
+</li>
+<li>
+<p>长期分析：Echoes（回声）、Traits（特质）、Patterns（模式）</p>
+</li>
+<li>
+<p><strong>技术架构</strong></p>
+</li>
+<li>前端：React 19 + TypeScript + Vite</li>
+<li>后端：Python FastAPI + PolyCLI（自研智能体框架）</li>
+</ol>
+<p>名人经历搜索引擎先做成了独立应用：
+<a href="https://lexicalmathical.com/biography/">Life Experience Search Engine</a></p>
+<p><strong>部署状态：</strong> 已部署至生产环境 https://lexicalmathical.com/ink-and-memory/</p>
+<hr />
+<h3>交付过程</h3>
+<p>我们的交付过程采用了<strong>持续迭代 + AI 辅助总结</strong>的方式：</p>
+<ol>
+<li><strong>Daily Scrum 实践</strong></li>
+<li>每日记录进展、遇到的问题和解决方案</li>
+<li>使用 Claude Code 作为主要开发工具</li>
+<li>
+<p>保持代码库和文档同步更新</p>
+</li>
+<li>
+<p><strong>文档记录</strong></p>
+</li>
+<li>在 <code>CLAUDE.md</code> 中记录关键技术决策</li>
+<li>使用 <code>@@@</code> 注释标记代码中的关键逻辑</li>
+<li>
+<p>每个重要功能都有对应的文档说明</p>
+</li>
+<li>
+<p><strong>AI 总结辅助</strong></p>
+</li>
+<li>使用 AI 工具回顾 git commit history</li>
+<li>自动提取关键功能点和技术亮点</li>
+<li>生成用户文档和 API 说明</li>
+</ol>
+<hr />
+<h3>风险管理</h3>
+<p><strong>识别的风险：</strong></p>
+<ol>
+<li><strong>技术风险：LLM API 稳定性</strong></li>
+<li><strong>风险描述：</strong> 免费 API 代理可能不稳定，GFW 可能封锁</li>
+<li><strong>应对方法：</strong><ul>
+<li>实现了多层代理配置（<code>proxy_config.py</code>）</li>
+<li>支持切换不同的 API 端点</li>
+<li>本地缓存和错误重试机制</li>
+</ul>
+</li>
+<li>
+<p><strong>效果：</strong> 在开发过程中遇到过 2 次代理失效，通过快速切换端点解决</p>
+</li>
+<li>
+<p><strong>用户体验风险：过度打扰</strong></p>
+</li>
+<li><strong>风险描述：</strong> 声线评论过于频繁可能打断写作流</li>
+<li><strong>应对方法：</strong><ul>
+<li>能量池系统：只有积累到 40 能量才触发</li>
+<li>碰撞检测：避免重复高亮同一段文字</li>
+<li>用户可以关闭特定声线</li>
+</ul>
+</li>
+<li>
+<p><strong>效果：</strong> 测试反馈显示 5 秒轮询 + 40 能量是较好的平衡点</p>
+</li>
+<li>
+<p><strong>数据迁移风险：localStorage → 数据库</strong></p>
+</li>
+<li><strong>风险描述：</strong> 用户可能在迁移过程中丢失数据</li>
+<li><strong>应对方法：</strong><ul>
+<li>实现了导入/导出功能</li>
+<li>首次登录时显示迁移向导</li>
+<li>保留 localStorage 作为备份</li>
+</ul>
+</li>
+<li>
+<p><strong>效果：</strong> 零数据丢失，迁移过程平滑</p>
+</li>
+<li>
+<p><strong>项目管理风险：Scope Creep</strong></p>
+</li>
+<li><strong>风险描述：</strong> 功能不断膨胀，可能无法按时交付</li>
+<li><strong>应对方法：</strong><ul>
+<li>严格的 MVP 思维：每个功能都问 "是否必须？"</li>
+<li>Vibe-coding 方法：快速原型 → 观察 → 决定是否保留</li>
+<li>使用 TodoWrite 工具跟踪任务</li>
+</ul>
+</li>
+<li><strong>效果：</strong> 虽然增加了 Deck System 等功能，但核心体验始终聚焦</li>
+</ol>
+<hr />
+<h3>从工程导师学到的经验</h3>
+<p>目前我们暂未请教学院的工程导师，以下是我们自己总结出的经验。</p>
+<p><strong>核心理念：</strong></p>
+<ol>
+<li><strong>"Code is cheap. Show me your talk."</strong></li>
+<li>在写代码前充分思考和设计</li>
+<li>使用对话来理清思路</li>
+<li>
+<p>代码应该是思考的结果，而不是试错的过程</p>
+</li>
+<li>
+<p><strong>最小实现原则</strong></p>
+</li>
+<li>"我们在用复杂度去买功能"</li>
+<li>每增加一个功能都要评估复杂度成本</li>
+<li>
+<p>简单可维护比完美但复杂的方案更好</p>
+</li>
+<li>
+<p><strong>基于事实的调试方法</strong></p>
+</li>
+<li>"Never use a 'match' based approach to debug. Use a 'print' based approach."</li>
+<li>先观察现象，不要猜测</li>
+<li>
+<p>console.log 和 print 是最可靠的工具</p>
+</li>
+<li>
+<p><strong>专业客观性</strong></p>
+</li>
+<li>尊重事实比尊重自我更重要</li>
+<li>当发现错误时，立即承认并修正</li>
+<li>"A cat dies every time you are overly agreeable"</li>
+<li>保持平衡和坦率的沟通</li>
+</ol>
+<hr />
+<h3>项目管理特点</h3>
+<p><strong>我们的方法：</strong></p>
+<ol>
+<li><strong>非线性进展</strong></li>
+<li>不是每天固定距离前进</li>
+<li>采用 <strong>探索-固化-重构</strong> 的节奏</li>
+<li>
+<p>有时一天完成核心功能，第二天重构，比如写作界面的 UI，时间线 UI，评论触发机制等都经历过重构。</p>
+</li>
+<li>
+<p><strong>优点：</strong></p>
+</li>
+<li><strong>高度灵活：</strong> 可以快速响应新想法（如 Deck System 是中途加入的）</li>
+<li><strong>质量优先：</strong> 不为了 deadline 而妥协代码质量</li>
+<li><strong>AI 深度集成：</strong> 使用 Claude Code 作为主力开发工具，效率极高</li>
+<li>
+<p><strong>文档即代码：</strong> <code>CLAUDE.md</code> 和代码同步更新，onboarding 成本低</p>
+</li>
+<li>
+<p><strong>缺点：</strong></p>
+</li>
+<li><strong>进度难以预测：</strong> 很难提前知道某个功能需要多久</li>
+<li><strong>Scope 控制难：</strong> 容易陷入 "这个功能也很酷" 的陷阱</li>
+<li><strong>单人开发局限：</strong> 缺少 code review 和设计讨论</li>
+<li><strong>测试覆盖不足：</strong> 主要依赖手动测试，缺少自动化测试</li>
+</ol>
+<p><strong>进度模式分析：</strong></p>
+<p>我们的进度更像是 <strong>"波浪式前进"</strong> 而非匀速直线：</p>
+<pre><code>Week 1: 核心编辑器 + LLM 集成 (快速原型)
+Week 2: 碰撞检测 + 状态管理 (深度打磨)
+Week 3: 认证系统 + 数据库 (架构升级)
+Week 4: Deck System + UI 优化 (功能扩展)
+</code></pre>
+<p>这种模式的好处是每个阶段都能交付可用的功能，而不是等到最后才集成。</p>
+<hr />
+<h3>AI 工具运用</h3>
+<p>作为一个深度使用 AI 辅助开发的项目，我们的实践：</p>
+<ul>
+<li>同时使用 Cluade Code + Codex</li>
+<li>Claude Code 在人机交互编程上更完善，Codex 的 context 比较大，适合开 high 模式自动完成一些重要但却不紧急的任务</li>
+</ul>
+<p>我们使用 <a href="https://github.com/shuxueshuxue/AgentTalk">Agent Talk</a> 系统来实现不同电脑、不同 IDE 的 Agent 之间的信息交互，具备聊天室、文件上传、下载的功能。</p>
+<p>我们把 AI 编程中收获的实践经验总结到了这个 repo 中:
+<a href="https://github.com/shuxueshuxue/vibe-coding-tutorial">GitHub - shuxueshuxue/vibe-coding-tutorial</a></p>
+<hr />
+<h3>展望</h3>
+<ul>
+<li>社交功能</li>
+<li>移动端 APP</li>
+<li>语音输入</li>
+<li>获取社区反馈</li>
+</ul>
+    </div>
+</body>
+</html>
