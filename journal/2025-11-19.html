@@ -114,6 +114,7 @@
             padding-left: 20px;
             margin: 24px 0;
             color: #666;
+            font-style: italic;
         }
 
         img {
@@ -160,6 +161,9 @@
         <a href="/" class="back-link">← 返回首页</a>
         
         <p><img alt="Echo Alpha Release" src="echo-alpha-release.png" /></p>
+<p>如果我们从创造力和相关性两个层面来衡量大模型给出的反馈的质量，那么我们想出了两个机制来提升效果：
+- 过去日记经过总结，提取形成长期记忆，让 Agent 对用户更加了解
+- 通过名人经历数据库 RAG，作为事实依据，让 Agent 能给用户一点惊喜感</p>
 <hr />
 <h2>Alpha 阶段总结报告</h2>
 <h3>产品交付：新闻稿</h3>
@@ -173,21 +177,25 @@
 <p>Timeline 模块可每日自动生成时间线图片。</p>
 <p>智能分析功能可生成对用户长期行为的分析，如 Echoes（回声）、Traits（特质）和 Patterns（模式）。</p>
 <p>在技术架构方面，前端使用 React 19 + TypeScript + Vite，后端采用 Python FastAPI 与自研智能体框架 PolyCLI 构建。</p>
+<p>Alpha 期我们还打磨了一个“轻社交”功能，让用户可以把好友的写作时间线与自己的并排对照：
+<strong>Friend Rail</strong>：在右侧放置圆形头像栈，展示最近查看过的好友。点击头像即可在同一个时间线上左右对比，也能快速切回仅显示「个人」。
+这一套 Friend System 既满足了“看朋友”的好奇心，也不会让人掉入复杂的社交网络：它只是一个干净的参考视图。</p>
 <p>名人经历搜索引擎先做成了独立应用：
-<a href="https://lexicalmathical.com/biography/">Life Experience Search Engine</a></p>
+<a href="https://lexicalmathical.com/biography/">Life Experience Search Engine</a>
+我们考虑之后加入现在的应用之中。</p>
 <p><strong>部署状态：</strong> 已部署至生产环境 https://lexicalmathical.com/ink-and-memory/</p>
 <hr />
 <h3>用户调研</h3>
 <p>我们邀请了一些用户，收集大家的反馈意见，汇总到表格中。</p>
 <p><a href="https://tavu5eecc71.feishu.cn/wiki/L7X2w8sDLimmUBkNW87cRPw1n6f">意见反馈收集 - Feishu Docs</a></p>
 <p>常见反馈：中英文混杂、希望不被 agent 频繁打断、Agent 幻觉、风格问题等。</p>
-<p>"它还不理解情感的意味并不是逻辑和心理学。它在试图辩论赢每一个用户，它会把用户逼成回避型"
-"用户需要的是陪伴而不是被批判"</p>
+<p>"它还不理解情感的意味并不是逻辑和心理学。它在试图辩论赢每一个用户，它会把用户逼成回避型"</p>
+<p>"用户需要的是陪伴而不是被批判"</p>
 <hr />
 <h3>交付过程</h3>
 <p>我们的交付过程采用了<strong>持续迭代 + AI 辅助总结</strong>的方式：</p>
 <p>我们采用了 Daily Scrum 实践，每天记录项目进展、遇到的问题和解决方案，并使用 Claude Code 作为核心开发工具，确保代码库与文档持续同步更新。</p>
-<p>在文档记录方面，我们将关键技术决策写入 <code>CLAUDE.md</code> 文件，并通过 <code>@@@</code> 注释标记代码中的重要逻辑。每个主要功能也有对应的文档说明。</p>
+<p>在文档记录方面，我们将关键技术决策写入 <code>CLAUDE.md</code> 文件，并通过 <code>@@@</code> 注释标记代码中的重要逻辑和 WIP 的代码。每个主要功能也有对应的文档说明。</p>
 <p>我们还使用 AI 工具辅助总结，回顾 git commit 历史，自动提取项目的关键功能点与技术亮点，并生成用户文档和 API 说明。
 我也在做这方面的自动化，这是我的个人仪表盘 <a href="https://lexicalmathical.com/gitdash/">GitDash - GitHub Activity Dashboard</a>，以后会有团队仪表盘、项目仪表盘。</p>
 <hr />
@@ -197,10 +205,6 @@
 <li>
 <p><strong>用户体验风险：过度打扰</strong><br />
 风险描述：声线评论过于频繁可能打断写作流。应对方法包括引入能量池系统，只有积累到 40 能量才触发评论；加入碰撞检测机制以避免重复高亮同一段文字；并允许用户关闭特定声线。</p>
-</li>
-<li>
-<p><strong>数据迁移风险：localStorage → 数据库</strong><br />
-风险描述：用户在迁移过程中可能丢失数据。应对方法包括实现导入与导出功能，在首次登录时引导用户完成迁移，并保留 localStorage 作为备用。效果：迁移过程平滑，未出现数据丢失情况。</p>
 </li>
 <li>
 <p><strong>项目管理风险：Scope Creep</strong><br />
@@ -239,10 +243,12 @@ Week 4: Deck System + UI 优化（功能扩展）</p>
 <hr />
 <h3>展望</h3>
 <ul>
-<li>社交功能</li>
+<li>更巧妙社交机制</li>
+<li>用户引导机制</li>
+<li>任务线系统（长期反馈）</li>
+<li>语音输入识别为文字</li>
+<li>获取社区反馈 - build in public</li>
 <li>移动端 APP</li>
-<li>语音输入</li>
-<li>获取社区反馈</li>
 </ul>
     </div>
 </body>
