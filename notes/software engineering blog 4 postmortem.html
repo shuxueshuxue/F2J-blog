@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目Postmortem | Digital Garden</title>
+    <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <a href="/index.html" class="site-title">LexicalMathical</a>
+        <div class="nav-section">
+<div class="nav-label">Notes</div>
+<a href="/Notes/software engineering blog 4 postmortem.html" class="nav-link active">项目Postmortem</a>
+<a href="/Notes/结对编程blog.html" class="nav-link">结对编程作业：电梯调度算法优化</a>
+</div>
+<div class="nav-section">
+<div class="nav-label">Blogs</div>
+<a href="/Blogs/Code&Play/AI/Bourbaki explainer.html" class="nav-link">Bourbaki explainer</a>
+<a href="/Blogs/Code&Play/Algorithm/AI-driven Decision-making Model Empowers Grassroots Governance (YICGG 2024).html" class="nav-link">How to Let it Run Multiple Rounds?</a>
+<a href="/Blogs/Code&Play/Algorithm/Duel-Temporal Bayesian Network (MCM2024 Outstanding Winner & AMS Award).html" class="nav-link">Duel-Temporal Bayesian Network (MCM2024 Outstanding Winner & AMS Award)</a>
+<a href="/Blogs/Code&Play/Algorithm/Time Series of Prices of Nine Futures (East China Cup 2023 First Prize).html" class="nav-link">Time Series of Prices of Nine Futures (East China Cup 2023 First Prize)</a>
+<a href="/Blogs/Code&Play/Games/Number growing.html" class="nav-link">Number growing</a>
+<a href="/Blogs/Code&Play/Games/Symmetry A group theory game.html" class="nav-link">Symmetry A group theory game</a>
+<a href="/Blogs/Code&Play/Games/Tensorcraft - a tensor game.html" class="nav-link">Code</a>
+<a href="/Blogs/Code&Play/Games/tensorlevels.html" class="nav-link">tensorlevels</a>
+<a href="/Blogs/Code&Play/Games/the impossible game @ game design challenge.html" class="nav-link">The post</a>
+<a href="/Blogs/Code&Play/Games/upper bound for number growing.html" class="nav-link">upper bound for number growing</a>
+<a href="/Blogs/Code&Play/Games/益智活动样题v0.1.html" class="nav-link">益智活动样题v0.1</a>
+<a href="/Blogs/Landing🛸Page.html" class="nav-link">Landing🛸Page</a>
+<a href="/Blogs/Markcode/Data Structures In Knowledge Management.html" class="nav-link">Data Structures In Knowledge Management</a>
+<a href="/Blogs/Markcode/Writing Code In A Decentralized Way.html" class="nav-link">Question</a>
+<a href="/Blogs/Mathematics/Analysis/Argument principle.html" class="nav-link">Argument principle</a>
+<a href="/Blogs/Mathematics/Analysis/Root Integrals Made Easy.html" class="nav-link">Derivation</a>
+<a href="/Blogs/Mathematics/Analysis/积分学实用技巧.html" class="nav-link">积分学实用技巧</a>
+<a href="/Blogs/Mathematics/Computational/Stability vs. Accuracy.html" class="nav-link">Question</a>
+<a href="/Blogs/Mathematics/Computational/left pseudo inverse matrix.html" class="nav-link">Linear least square problem</a>
+<a href="/Blogs/Mathematics/Computational/take cubic root by hand.html" class="nav-link">take cubic root by hand</a>
+<a href="/Blogs/Mathematics/Group Theory/Action 🔥.html" class="nav-link">Action 🔥</a>
+<a href="/Blogs/Mathematics/Group Theory/Move coset ⚽.html" class="nav-link">Move coset ⚽</a>
+<a href="/Blogs/Mathematics/Group Theory/Shapes 🔹.html" class="nav-link">Shapes 🔹</a>
+<a href="/Blogs/Mathematics/Group Theory/World 🗺️.html" class="nav-link">World 🗺️</a>
+<a href="/Blogs/Other Subjects/Physics/洛伦兹变换的推导.html" class="nav-link">洛伦兹变换的推导</a>
+</div>
+    </nav>
+
+    <main class="main-wrapper">
+        <div class="content-container">
+            <article>
+                <header>
+                    <h1>项目Postmortem</h1>
+                    <span class="meta-date">Last updated: 2025-11-26</span>
+                </header>
+                <div class="content">
+                    <h1 id="blog">blog</h1>
+<p>alpha 阶段团队贡献排名：
+费俊杰：Bug 修复，实现名人经历生成模块，实现了好友功能，时间线自动生成，卡组系统
+王亚男：用户调研，日记样例收集，常见问题分类总结
+姜绍彬：用户引导机制，语音功能 WIP
+刘伟权：调研了名人经历生成模块</p>
+<h1 id="postmortem">项目Postmortem</h1>
+<p><strong>设想和目标</strong>
+1. 我们的软件要解决什么问题？是否定义得很清楚？是否对典型用户和典型场景有清晰的描述？
+我们软件要解决的是用户的情感陪伴、生活记录的需求
+主要面向在校大学生、刚入职工作的年轻人；工作压力较大，需要情绪排解渠道；本身有写日记习惯，如手帐爱好者；有记录生活的需求，但感到传统日记时间、心理成本太大；文学爱好者；创业者，需要灵感；</p>
+<ol>
+<li>
+<p>我们达到目标了么（原计划的功能做到了几个？  按照原计划交付时间交付了么？ 原计划达到的用户数量达到了么?)
+目标基本达到，按原计划交付。</p>
+</li>
+<li>
+<p>和上一个阶段相比，团队软件工程的质量提高了么？ 在什么地方有提高，具体提高了多少，如何衡量的？
+质量并未提高，主要是由于对 AI 工具的使用方面还没有建立起完善的工具链，并没有采取最佳的 AI - 人类协作范式。</p>
+</li>
+<li>
+<p>用户量, 用户对重要功能的接受程度和我们事先的预想一致么? 我们离目标更近了么?
+用户量与事先预想的一致。对重要功能的接受程度比事先预想的要低一些，可能是因为我们目前这些功能的实现质量受限。</p>
+</li>
+<li>
+<p>有什么经验教训? 如果历史重来一遍, 我们会做什么改进?
+我们会采用新的 AI-人类合作范式，敬请期待！</p>
+</li>
+</ol>
+<h2 id="_1"><strong>计划</strong></h2>
+<ol>
+<li>
+<p>是否有充足的时间来做计划?  
+大家时间不太充足，在非全职的情况下，让大家聚在一起凑时间开会是有很大难度的。这是一个痛点，我们正在开发一款叫做 IdeaSwarm 的工具来解决异步协作、任务规划的问题。</p>
+</li>
+<li>
+<p>团队在计划阶段是如何解决同事们对于计划的不同意见的？
+先实现，看效果</p>
+</li>
+<li>
+<p>有没有发现你做了一些事后看来没必要或没多大价值的事?
+由于目前没有交付压力，我认为工程中没有白干的事，尤其是在现在的 AI 时代。做出来东西都是未来可能用上的，即便只是作为某种 prompt</p>
+</li>
+<li>
+<p>是否每一项任务都有清楚定义和衡量的交付件?
+有的，这是让团队动起来的关键</p>
+</li>
+<li>
+<p>是否项目的整个过程都按照计划进行，项目出了什么意外？有什么风险是当时没有估计到的，为什么没有估计到?
+有同学忙于其他项目。然后有个前端的 bug 还是挺难修的，即便看上去只是简单的 CRUD，因为我不熟悉前端，对代码的掌控力还不够</p>
+</li>
+<li>
+<p>在计划中有没有留下缓冲区，缓冲区有作用么?
+没有</p>
+</li>
+<li>
+<p>将来的计划会做什么修改？（例如：缓冲区的定义，加班）
+目前不会
+ </p>
+</li>
+</ol>
+<p><strong>我们学到了什么? 如果历史重来一遍, 我们会做什么改进?</strong>
+我们会使用专门的工具来进行异步协作，进度监督，当然管理成员动机、让大家燃起兴趣是最重要的，但这难度比较大，但我个人的信仰是万物皆可工程化，包括计划、团队管理</p>
+<h2 id="_2">资源</h2>
+<ol>
+<li>
+<p>我们有足够的资源来完成各项任务么?
+有的，虽然服务器很廉价</p>
+</li>
+<li>
+<p>各项任务所需的时间和其他资源是如何估计的，精度如何?
+我们目前处于探索阶段，时间估计难度较大</p>
+</li>
+<li>
+<p>测试的时间，人力和软件/硬件资源是否足够? 对于那些不需要编程的资源 (美工设计/文案)是否低估难度? 
+那些不需要编程的资源，难度大，可能要花钱，但时间消耗不大</p>
+</li>
+<li>
+<p>你有没有感到你做的事情可以让别人来做（更有效率）?
+其实前端的页面设计，交互逻辑可以让非代码的同学借助 AI 工具来做，但我们缺乏培训（也要花时间！）和以往经验</p>
+</li>
+</ol>
+<p>有什么经验教训? 如果历史重来一遍, 我们会做什么改进?
+目前没想到 </p>
+<h2 id="_3">变更管理</h2>
+<ol>
+<li>
+<p>每个相关的员工都及时知道了变更的消息?
+知道了</p>
+</li>
+<li>
+<p>我们采用了什么办法决定“推迟”和“必须实现”的功能?
+必须实现的功能是那种，实现了这个功能之后能增进我们对产品形式的理解，促进我们想象力和进一步设计的功能，这种功能能够持续产生收益，必须先实现</p>
+</li>
+<li>
+<p>项目的出口条件（Exit Criteria – 什么叫“做好了”）有清晰的定义么?
+能用 -&gt; 好用 -&gt; 给人惊喜、精致感</p>
+</li>
+<li>
+<p>员工是否能够有效地处理意料之外的工作请求？
+目前没有</p>
+</li>
+</ol>
+<p><strong>我们学到了什么? 如果历史重来一遍, 我们会做什么改进?</strong>
+目前没想到</p>
+<h2 id="_4">设计/实现</h2>
+<ol>
+<li>
+<p>设计工作在什么时候，由谁来完成的？是合适的时间，合适的人么？
+软件架构方面，是由团队技术负责人设计，是合适的人。
+UI 方面由产品负责人设计，但是难度较大，还需要学习。</p>
+</li>
+<li>
+<p>设计工作有没有碰到模棱两可的情况，团队是如何解决的？
+都实现，然后看效果。</p>
+</li>
+<li>
+<p>团队是否运用单元测试（unit test），测试驱动的开发（TDD）、UML, 或者其他工具来帮助设计和实现？这些工具有效么？ 比较项目开始的 UML 文档和现在的状态有什么区别？这些区别如何产生的？是否要更新 UML 文档？
+比较混乱，我们目前的模式不妨说是“AI 驱动开发”，部署流程、测试流程都存在 AI context 里面，比较混乱亟待改进。</p>
+</li>
+<li>
+<p>什么功能产生的Bug最多，为什么？在发布之后发现了什么重要的bug? 为什么我们在设计/开发的时候没有想到这些情况?
+日记保存这一功能产生的 bug 最多，因为数据库架构没有合理设计，没有给 LLM 施加压力（在有限的复杂度内实现功能，保障 single source of truth，防止前端危险的多个异步处理混杂）
+timeline 图片生成次之，这是由于网络和部署的问题，已解决（以后遇到类似的问题会直接采取这一最佳方案了！）</p>
+</li>
+<li>
+<p>代码复审（Code Review）是如何进行的，是否严格执行了代码规范？
+AI 写代码，人来复审。
+但理想模式并不是让人来直接写代码，而是通过一些“旁敲侧击”的手段来诊断代码质量，例如对代码行数、数据库 schema 的限制。
+我认为写代码是一个花费复杂度去买功能的过程，所谓 review 就是对复杂度的管理。
+这可以更精确地形式化为一个优化问题：把当前代码视为决策变量 $x$，其复杂度为 $C(x)$，实现的功能价值为 $V(x)$。代码评审的目标，就是在满足“必要功能都实现”的前提下，控制复杂度、提高性价比。例如可以写成：</p>
+</li>
+</ol>
+<p>$$
+\min_{x} C(x)
+\quad \text{s.t.}\quad
+V_i(x) \ge V_i^{\min},\ \forall i \in \text{(必要功能集合)}
+$$</p>
+<p>或者采用带惩罚项的目标函数：</p>
+<p>$$
+\max_{x} J(x) = V(x) - \lambda C(x),
+$$</p>
+<p>其中 $\lambda$ 表示我们对复杂度的厌恶程度。代码评审本质上就是不断调整 $x$，在“功能价值”与“实现复杂度”之间寻找一个更优的平衡点。</p>
+<h2 id="_5">测试/发布</h2>
+<p>这里就一个主要问题，目前的 AI 工具很难测试前端，即便有 Chrome MCP 这样的工具，还是很慢很笨。</p>
+<hr />
+<h1 id="_6">对于风险</h1>
+<ol>
+<li>PMF 适配风险
+痛点较为宽泛，目前缺乏一个 UI 设计上的主题，属于功能铺开，但未深入整合、优化体验、理解用户的阶段。</li>
+<li>技术复杂度和执行风险
+工程复杂度的风险已经解决。在做这个项目的时候，我能发现自己的工程能力得到了提高，我们迭代的速度会越来越快。我们目前拥有良好的架构，我们自己的 Agent 框架提供了强有力的支撑
+唯一的问题还是在服务器选购、API 成本的控制上</li>
+</ol>
+<h1 id="_7">成员变动</h1>
+<p>根据课程要求，我们必须选定一人离开团队。根据个人贡献排名，我们要离开当前团队的成员是林伟权。</p>
+                </div>
+            </article>
+        </div>
+    </main>
+</body>
+</html>

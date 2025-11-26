@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>结对编程作业：电梯调度算法优化 | Digital Garden</title>
+    <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <a href="/index.html" class="site-title">LexicalMathical</a>
+        <div class="nav-section">
+<div class="nav-label">Notes</div>
+<a href="/Notes/software engineering blog 4 postmortem.html" class="nav-link">项目Postmortem</a>
+<a href="/Notes/结对编程blog.html" class="nav-link active">结对编程作业：电梯调度算法优化</a>
+</div>
+<div class="nav-section">
+<div class="nav-label">Blogs</div>
+<a href="/Blogs/Code&Play/AI/Bourbaki explainer.html" class="nav-link">Bourbaki explainer</a>
+<a href="/Blogs/Code&Play/Algorithm/AI-driven Decision-making Model Empowers Grassroots Governance (YICGG 2024).html" class="nav-link">How to Let it Run Multiple Rounds?</a>
+<a href="/Blogs/Code&Play/Algorithm/Duel-Temporal Bayesian Network (MCM2024 Outstanding Winner & AMS Award).html" class="nav-link">Duel-Temporal Bayesian Network (MCM2024 Outstanding Winner & AMS Award)</a>
+<a href="/Blogs/Code&Play/Algorithm/Time Series of Prices of Nine Futures (East China Cup 2023 First Prize).html" class="nav-link">Time Series of Prices of Nine Futures (East China Cup 2023 First Prize)</a>
+<a href="/Blogs/Code&Play/Games/Number growing.html" class="nav-link">Number growing</a>
+<a href="/Blogs/Code&Play/Games/Symmetry A group theory game.html" class="nav-link">Symmetry A group theory game</a>
+<a href="/Blogs/Code&Play/Games/Tensorcraft - a tensor game.html" class="nav-link">Code</a>
+<a href="/Blogs/Code&Play/Games/tensorlevels.html" class="nav-link">tensorlevels</a>
+<a href="/Blogs/Code&Play/Games/the impossible game @ game design challenge.html" class="nav-link">The post</a>
+<a href="/Blogs/Code&Play/Games/upper bound for number growing.html" class="nav-link">upper bound for number growing</a>
+<a href="/Blogs/Code&Play/Games/益智活动样题v0.1.html" class="nav-link">益智活动样题v0.1</a>
+<a href="/Blogs/Landing🛸Page.html" class="nav-link">Landing🛸Page</a>
+<a href="/Blogs/Markcode/Data Structures In Knowledge Management.html" class="nav-link">Data Structures In Knowledge Management</a>
+<a href="/Blogs/Markcode/Writing Code In A Decentralized Way.html" class="nav-link">Question</a>
+<a href="/Blogs/Mathematics/Analysis/Argument principle.html" class="nav-link">Argument principle</a>
+<a href="/Blogs/Mathematics/Analysis/Root Integrals Made Easy.html" class="nav-link">Derivation</a>
+<a href="/Blogs/Mathematics/Analysis/积分学实用技巧.html" class="nav-link">积分学实用技巧</a>
+<a href="/Blogs/Mathematics/Computational/Stability vs. Accuracy.html" class="nav-link">Question</a>
+<a href="/Blogs/Mathematics/Computational/left pseudo inverse matrix.html" class="nav-link">Linear least square problem</a>
+<a href="/Blogs/Mathematics/Computational/take cubic root by hand.html" class="nav-link">take cubic root by hand</a>
+<a href="/Blogs/Mathematics/Group Theory/Action 🔥.html" class="nav-link">Action 🔥</a>
+<a href="/Blogs/Mathematics/Group Theory/Move coset ⚽.html" class="nav-link">Move coset ⚽</a>
+<a href="/Blogs/Mathematics/Group Theory/Shapes 🔹.html" class="nav-link">Shapes 🔹</a>
+<a href="/Blogs/Mathematics/Group Theory/World 🗺️.html" class="nav-link">World 🗺️</a>
+<a href="/Blogs/Other Subjects/Physics/洛伦兹变换的推导.html" class="nav-link">洛伦兹变换的推导</a>
+</div>
+    </nav>
+
+    <main class="main-wrapper">
+        <div class="content-container">
+            <article>
+                <header>
+                    <h1>结对编程作业：电梯调度算法优化</h1>
+                    <span class="meta-date">Last updated: 2025-11-26</span>
+                </header>
+                <div class="content">
+                    <h1 id="blog-homework-softwareengineering">blog #homework #softwareEngineering</h1>
+<h1 id="_1">结对编程作业：电梯调度算法优化</h1>
+<h2 id="_2">项目信息</h2>
+<ul>
+<li><strong>作业要求</strong>：<a href="https://z.gitee.cn/zgca/repos/zgca/se-course/issues/table?issue=ICVHZU">作业博客链接</a></li>
+<li><strong>项目仓库</strong>：<a href="https://z.gitee.cn/zgca/repos/zgca/elevator-lwq-fjj/sources">仓库链接</a></li>
+</ul>
+<h2 id="1-psp-">1. PSP表格 - 开发前估计</h2>
+<table>
+<thead>
+<tr>
+<th>PSP阶段</th>
+<th>预估时间(小时)</th>
+<th>实际时间(小时)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>计划</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>· 估计任务时间</td>
+<td>1</td>
+<td>1.5</td>
+</tr>
+<tr>
+<td><strong>开发</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>· 分析需求</td>
+<td>2</td>
+<td>3</td>
+</tr>
+<tr>
+<td>· 生成设计文档</td>
+<td>2</td>
+<td>1</td>
+</tr>
+<tr>
+<td>· 设计复审</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>· 代码规范制定</td>
+<td>1</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>· 具体设计</td>
+<td>3</td>
+<td>4</td>
+</tr>
+<tr>
+<td>· 具体编码</td>
+<td>10</td>
+<td>15</td>
+</tr>
+<tr>
+<td>· 代码复审</td>
+<td>2</td>
+<td>3</td>
+</tr>
+<tr>
+<td>· 测试</td>
+<td>3</td>
+<td>5</td>
+</tr>
+<tr>
+<td><strong>报告</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>· 测试报告</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>· 计算工作量</td>
+<td>0.5</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>· 事后总结</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td><strong>合计</strong></td>
+<td>27.5</td>
+<td>37.5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2">2. 软件工程原则的应用</h2>
+<h3 id="information-hiding">Information Hiding (信息隐藏)</h3>
+<p>在我们的设计中，信息隐藏主要体现在：</p>
+<ol>
+<li><strong>代理模型设计</strong>：</li>
+</ol>
+<pre><code class="language-python">class ProxyElevator:
+    def __init__(self, elevator_id, api_client):
+        self._id = elevator_id
+        self._api_client = api_client
+
+    @property
+    def current_floor(self):
+        # 隐藏了实际的API调用细节
+        state = self._api_client.get_state()
+        return state.elevators[self._id].current_floor
+</code></pre>
+<p>通过代理模式，我们隐藏了与模拟器API交互的复杂性，调度算法只需要关注业务逻辑。</p>
+<ol>
+<li><strong>控制器基类</strong>：将复杂的事件循环和状态管理隐藏在基类中，子类只需要实现具体的调度策略。</li>
+</ol>
+<h3 id="interface-design">Interface Design (接口设计)</h3>
+<p>我们采用了清晰的分层接口设计：</p>
+<ol>
+<li>
+<p><strong>控制器接口</strong>：定义了标准的事件回调方法</p>
+<ul>
+<li><code>on_passenger_call()</code>: 乘客呼叫电梯</li>
+<li><code>on_elevator_idle()</code>: 电梯空闲</li>
+<li><code>on_elevator_stopped()</code>: 电梯停靠</li>
+</ul>
+</li>
+<li>
+<p><strong>API客户端接口</strong>：统一的HTTP通信接口</p>
+<ul>
+<li><code>get_state()</code>: 获取当前状态</li>
+<li><code>go_to_floor()</code>: 发送控制命令</li>
+<li><code>step()</code>: 推进时钟</li>
+</ul>
+</li>
+</ol>
+<h3 id="loose-coupling">Loose Coupling (松耦合)</h3>
+<p>通过以下方式实现松耦合：</p>
+<ol>
+<li><strong>事件驱动架构</strong>：算法模块和可视化模块完全独立，通过事件和状态传递信息  </li>
+<li><strong>环境变量控制</strong>：通过 <code>ELEVATOR_CLIENT_TYPE</code> 切换GUI/Algorithm模式，实现模块间的解耦  </li>
+<li><strong>代理模式</strong>：算法不直接依赖具体的数据结构，而是通过代理访问</li>
+</ol>
+<h2 id="3">3. 核心算法设计</h2>
+<h3 id="_3">算法关键特性</h3>
+<h4 id="1-scan">1. 智能SCAN优化</h4>
+<p>传统SCAN算法的问题是机械地扫描，我们的优化包括：
+- <strong>动态方向判断</strong>：根据请求分布动态调整扫描方向
+- <strong>预测性停靠</strong>：预测未来可能的请求，提前定位</p>
+<pre><code class="language-python">def calculate_request_score(self, floor, direction):
+    &quot;&quot;&quot;计算请求优先级分数&quot;&quot;&quot;
+    score = 0
+    # 同方向请求加权
+    if direction == self.scan_direction:
+        score += 10
+    # 距离惩罚
+    score -= abs(self.current_floor - floor)
+    # 等待时间加权
+    score += self.floor_wait_times[floor] * 0.5
+    return score
+</code></pre>
+<h4 id="2_1">2. 多电梯协同</h4>
+<ul>
+<li><strong>负载均衡</strong>：根据当前载客量分配任务</li>
+<li><strong>区域划分</strong>：电梯分配不同的服务区域（Express/Local）</li>
+<li><strong>防止饥饿</strong>：确保所有请求最终都能被服务</li>
+</ul>
+<h4 id="3_1">3. 性能优化策略</h4>
+<ul>
+<li><strong>批量载客</strong>：同方向的乘客尽可能一次性载走</li>
+<li><strong>减少空载运行</strong>：通过预测减少无效移动</li>
+<li><strong>响应时间优化</strong>：优先服务等待时间长的请求</li>
+</ul>
+<h3 id="_4">算法独到之处</h3>
+<ol>
+<li><strong>双重优化目标</strong>：不仅优化平均等待时间，还特别关注P95等待时间  </li>
+<li><strong>自适应策略</strong>：根据当前客流模式动态调整策略  </li>
+<li><strong>预测性调度</strong>：基于历史数据预测未来请求</li>
+</ol>
+<h3 id="_5">性能分析</h3>
+<p>我们的算法表现优势：
+- <strong>完成率高</strong>：约81%的乘客能够完成运送
+- <strong>等待时间均衡</strong>：P95和平均等待时间接近，说明服务质量稳定</p>
+<p>劣势：
+- <strong>极端情况处理</strong>：在突发大量请求时响应较慢
+- <strong>计算开销</strong>：复杂的评分机制增加了计算时间</p>
+<h2 id="4">4. 需求变化与重构</h2>
+<h3 id="_6">重构过程</h3>
+<p>当需求从“单纯优化平均等待时间”变为“优化平均 + P95”时，我们进行了以下重构：</p>
+<ol>
+<li>
+<p><strong>算法重构</strong>：</p>
+<ul>
+<li>从简单SCAN改为智能SCAN</li>
+<li>添加了等待时间追踪机制</li>
+<li>引入了优先级队列</li>
+</ul>
+</li>
+<li>
+<p><strong>接口重构</strong>：</p>
+<ul>
+<li>抽象出 <code>calculate_score()</code> 方法</li>
+<li>统一了电梯选择接口</li>
+</ul>
+</li>
+</ol>
+<h3 id="_7">回归测试</h3>
+<p>通过以下方式保证重构质量：
+1. <strong>性能基准测试</strong>：记录重构前后的关键指标<br />
+2. <strong>单元测试</strong>：测试核心算法逻辑<br />
+3. <strong>集成测试</strong>：完整运行模拟场景</p>
+<h3 id="git">Git协作</h3>
+<ul>
+<li><strong>Pull Request次数</strong>：约15次  </li>
+<li><strong>主要问题</strong>：</li>
+<li>合并冲突：通过明确分工模块解决</li>
+<li>代码风格不一致：制定统一规范</li>
+<li><strong>解决方案</strong>：</li>
+<li>采用feature branch开发模式</li>
+<li>Code review机制</li>
+<li>每次PR前先rebase master</li>
+</ul>
+<h2 id="5">5. 代码规范与质量保证</h2>
+<h3 id="_8">代码规范共识</h3>
+<p>经过讨论，我们采用了：
+1. <strong>Python PEP8规范</strong>：使用black自动格式化<br />
+2. <strong>命名规范</strong>：
+    - 类名：CamelCase
+    - 函数/变量：snake_case
+    - 常量：UPPER_CASE<br />
+3. <strong>注释规范</strong>：
+    - 关键算法必须有docstring
+    - 复杂逻辑添加inline注释
+    - 使用 <code>@@@</code> 标记关键代码段</p>
+<h3 id="_9">异常处理</h3>
+<pre><code class="language-python">try:
+    response = self.api_client.get_state()
+except ConnectionError:
+    # 连接失败，尝试重连
+    self.reconnect()
+except TimeoutError:
+    # 超时，记录并跳过本次循环
+    logger.error(&quot;API timeout&quot;)
+    continue
+</code></pre>
+<h3 id="_10">质量保证工具</h3>
+<ul>
+<li><strong>GitScan</strong>：自动扫描代码安全问题  </li>
+<li><strong>pylint</strong>：静态代码分析  </li>
+<li><strong>pytest</strong>：单元测试框架</li>
+</ul>
+<h2 id="6">6. 界面模块设计</h2>
+<h3 id="ui">UI设计理念</h3>
+<p>我们采用了现代化的可视化设计：</p>
+<ol>
+<li>
+<p><strong>视觉设计</strong>：</p>
+<ul>
+<li>紫色渐变主题</li>
+<li>毛玻璃效果（Glassmorphism）</li>
+<li>动画过渡效果</li>
+</ul>
+</li>
+<li>
+<p><strong>功能设计</strong>：</p>
+<ul>
+<li>实时电梯位置显示</li>
+<li>楼层等待队列可视化</li>
+<li>性能指标仪表盘</li>
+</ul>
+</li>
+</ol>
+<h3 id="mvc">MVC模式实现</h3>
+<pre><code>Model (数据层)：
+├── SimulationState - 模拟状态
+├── ElevatorState - 电梯状态
+└── PerformanceMetrics - 性能数据
+
+View (视图层)：
+├── frontend/index.html - 页面结构
+├── 电梯井可视化 - Canvas绘制
+└── 指标面板 - DOM更新
+
+Controller (控制层)：
+├── API轮询 - 获取状态
+├── 事件处理 - 用户交互
+└── 状态更新 - 触发视图刷新
+</code></pre>
+<h3 id="_11">模块对接</h3>
+<ol>
+<li><strong>后端→前端</strong>：通过HTTP API (<code>/api/state</code>)  </li>
+<li><strong>前端→后端</strong>：控制命令通过API发送  </li>
+<li><strong>实时更新</strong>：100ms轮询间隔</li>
+</ol>
+<h3 id="_12">界面截图</h3>
+<p><img alt="" src="/assets/images/结对编程blog_e779928a78af08d32e19c9372997ae8a.png" /></p>
+<ul>
+<li>电梯实时位置动画</li>
+<li>楼层队列闪烁提示</li>
+<li>性能指标颜色编码</li>
+</ul>
+<h2 id="7">7. 结对编程过程</h2>
+<p><img alt="" src="/assets/images/结对编程blog_99f5e197efe1084cade3e491f8226a54.jpg" /></p>
+<h3 id="_13">合作方式</h3>
+<p>我们采用了<strong>驾驶员-观察员</strong>模式：
+- 一人编码（驾驶员）
+- 一人审查并提供建议（观察员）
+- 每2小时轮换角色</p>
+<h3 id="_14">结对编程优点</h3>
+<ol>
+<li><strong>知识共享</strong>：快速学习对方的技术栈  </li>
+<li><strong>实时review</strong>：减少bug产生  </li>
+<li><strong>思路碰撞</strong>：产生更好的解决方案  </li>
+<li><strong>持续专注</strong>：相互督促，效率更高</li>
+</ol>
+<h3 id="_15">结对编程缺点</h3>
+<ol>
+<li><strong>时间协调困难</strong>：需要同时在线  </li>
+<li><strong>风格冲突</strong>：初期需要磨合  </li>
+<li><strong>疲劳度高</strong>：持续交流比较累</li>
+</ol>
+<h3 id="_16">伙伴评价</h3>
+<p><strong>优点</strong>：
+4. <strong>技术能力强</strong>：对算法和数据结构理解深入<br />
+5. <strong>沟通效率高</strong>：能清晰表达技术方案<br />
+6. <strong>学习能力强</strong>：快速掌握新技术<br />
+7. <strong>责任心强</strong>：主动承担困难任务</p>
+<p><strong>需要改进</strong>：
+8. <strong>过度优化倾向</strong>：有时会陷入过早优化</p>
+<h3 id="_17">改进建议（三明治方法）</h3>
+<p>“你的代码质量和算法设计都非常优秀，特别是在性能优化方面的见解让我学到很多。不过我注意到有时候我们会在一些细节优化上花费过多时间，可能我们可以先实现基本功能，然后再根据性能测试结果有针对性地优化。这样既保证了你追求卓越的特质，又能提高整体开发效率，你觉得呢？”</p>
+<h2 id="8">8. 实际时间消耗与差异分析</h2>
+<p>实际花费时间（37.5小时）比预估（27.5小时）多了10小时，主要原因：</p>
+<ol>
+<li><strong>算法调优耗时超预期</strong>（+5h）：P95优化比想象中困难  </li>
+<li><strong>前端可视化</strong>（+3h）：追求更好的用户体验  </li>
+<li><strong>调试时间</strong>（+2h）：异步通信问题定位</li>
+</ol>
+<h2 id="9-ai">9. 技术攻克与AI协作</h2>
+<h3 id="_18">技术难点攻克</h3>
+<ol>
+<li>
+<p><strong>异步状态同步问题</strong>：</p>
+<ul>
+<li>挑战：前端轮询和后端更新不同步</li>
+<li>解决：引入状态版本号机制</li>
+</ul>
+</li>
+<li>
+<p><strong>性能瓶颈</strong>：</p>
+<ul>
+<li>挑战：200个tick瞬间完成，无法观察</li>
+<li>解决：添加可配置延迟机制</li>
+</ul>
+</li>
+</ol>
+<h3 id="ai">AI工具协作</h3>
+<p>使用Claude AI辅助：</p>
+<ol>
+<li><strong>代码生成</strong>：基础框架和模板代码  </li>
+<li><strong>问题诊断</strong>：分析错误日志和定位问题  </li>
+<li><strong>算法优化</strong>：提供优化思路和参考实现  </li>
+<li><strong>文档编写</strong>：README和注释规范</li>
+</ol>
+<h2 id="10">10. 项目收获与总结</h2>
+<p>通过这次结对编程项目，我们不仅实现了一个性能优良的电梯调度系统，更重要的是：</p>
+<ol>
+<li><strong>技术成长</strong>：掌握了事件驱动架构、实时系统设计  </li>
+<li><strong>协作能力</strong>：学会了高效的结对编程方法  </li>
+<li><strong>工程思维</strong>：理解了软件工程原则在实际项目中的应用  </li>
+<li><strong>问题解决</strong>：培养了系统性分析和解决复杂问题的能力</li>
+</ol>
+<p>这次项目让我们深刻体会到，优秀的软件不仅需要好的算法，更需要良好的架构设计、规范的开发流程和有效的团队协作。</p>
+                </div>
+            </article>
+        </div>
+    </main>
+</body>
+</html>
