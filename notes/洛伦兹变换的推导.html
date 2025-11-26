@@ -5,175 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>洛伦兹变换的推导 - F@J</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Noto Sans SC";
-            line-height: 1.8;
-            color: #333;
-            background: #fafafa;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 60px 20px;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-bottom: 24px;
-            color: #666;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-
-        .back-link:hover {
-            color: #333;
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: #1a1a1a;
-        }
-
-        h2 {
-            font-size: 1.8rem;
-            margin-top: 48px;
-            margin-bottom: 24px;
-            color: #1a1a1a;
-        }
-
-        h3 {
-            font-size: 1.4rem;
-            margin-top: 36px;
-            margin-bottom: 20px;
-            color: #1a1a1a;
-        }
-
-        h4 {
-            font-size: 1.2rem;
-            margin-top: 28px;
-            margin-bottom: 16px;
-            color: #1a1a1a;
-        }
-
-        p {
-            margin-bottom: 20px;
-        }
-
-        ul, ol {
-            margin-left: 24px;
-            margin-bottom: 20px;
-        }
-
-        li {
-            margin-bottom: 8px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 24px 0;
-            background: white;
-        }
-
-        th {
-            background: #f5f5f5;
-            padding: 12px;
-            text-align: left;
-            border: 1px solid #e5e5e5;
-            font-weight: 600;
-        }
-
-        td {
-            padding: 12px;
-            border: 1px solid #e5e5e5;
-        }
-
-        tr:hover {
-            background: #fafafa;
-        }
-
-        img {
-            max-width: 100%;
-            height: auto;
-            margin: 24px 0;
-            border-radius: 4px;
-        }
-
-        code {
-            background: #f5f5f5;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
-            font-size: 0.9em;
-        }
-
-        pre {
-            background: #f5f5f5;
-            padding: 16px;
-            border-radius: 4px;
-            overflow-x: auto;
-            margin-bottom: 20px;
-        }
-
-        pre code {
-            background: none;
-            padding: 0;
-        }
-
-        blockquote {
-            border-left: 4px solid #e5e5e5;
-            padding-left: 20px;
-            margin: 24px 0;
-            color: #666;
-        }
-
-        a {
-            color: #0066cc;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        @media (max-width: 600px) {
-            body {
-                font-size: 0.95rem;
-            }
-
-            h1 {
-                font-size: 1.8rem;
-            }
-
-            h2 {
-                font-size: 1.5rem;
-            }
-
-            h3 {
-                font-size: 1.3rem;
-            }
-
-            .container {
-                padding: 40px 16px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
-    <div class="container">
+    <div class="page">
         <a href="/" class="back-link">← 返回首页</a>
-
-        <p>曹老师的课上讲过，然而我并没有完全听懂，且听了就忘了。今天突然想到，于是动手尝试一下。我这里是用纯线性代数的方式，来建立狭义相对论中的参考系的坐标变换公式，不知道和他讲的是否一致。
+        <div class="card">
+            <h1>洛伦兹变换的推导</h1>
+            <p>曹老师的课上讲过，然而我并没有完全听懂，且听了就忘了。今天突然想到，于是动手尝试一下。我这里是用纯线性代数的方式，来建立狭义相对论中的参考系的坐标变换公式，不知道和他讲的是否一致。
 时空坐标系
 ![[Blogs/Pasted image 20221106111038.png]]
 我们仅研究物体在一个方向上的运动，因此时空坐标系是二维的。该坐标系中的一个点可以代表一个物体在特定时刻的所处的位置，也可以代表一个事件在某时某地发生。一条曲线可以代表一个物体在一段时间内的运动轨迹，如图中的直线段 $l$ 就代表了一个静止的物体。直线 c 代表了从原点发出的一束光，斜率为光速 c。参照物的坐标设为 $x=0$ 。</p>
@@ -243,6 +82,7 @@ $$A \begin{pmatrix} t \ x \end{pmatrix}=\gamma\begin{pmatrix} t-\dfrac{v}{c^2}x 
 <h4>群论性质</h4>
 <p>坐标变换既然是“变换”，就应该满足结合律，于是我们自然思考能否刻画出它的群结构。
 To be continued ...</p>
+        </div>
     </div>
 </body>
 </html>
