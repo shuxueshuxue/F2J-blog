@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>echo - beta stage plan - F@J</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+    <link rel="stylesheet" href="/assets/style.css">
+    <script>
+      window.MathJax = {
+        tex: {inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$']]},
+        options: {skipHtmlTags: ['script','noscript','style','textarea','pre','code']}
+      };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+    <div class="page">
+        <a href="/" class="back-link">← 返回首页</a>
+        <div class="card">
+            <h1>echo - beta stage plan</h1>
+            <p style="color: var(--text-muted); margin-top: 4px;">2025-12-03</p>
+            <h1>blog</h1>
+<h4>团队成员的变化（有新的成员）</h4>
+<p>林伟权退出，宋尚文加入</p>
+<h4>根据 postmortem 会议的总结，你们会在 beta 阶段做什么不一样的改进（项目管理和其它软件工程方面）</h4>
+<p>补充上线当前产品非常关键的几个其他功能<br />
+合适的 built in prompt<br />
+卡组的自动评测<br />
+长时间的 context 积累，Agent 记忆系统<br />
+语音交互<br />
+更细致的生图，艺术疗愈<br />
+不同的模型的测试</p>
+<h4>在 postmortem 上发现的 “踩过的坑”，未能处理的风险，你们发现了什么根本原因，如何改进，避免？</h4>
+<p>1.大家都有想要实现的“新功能”<br />
+之前几次开会，大家都有自己感兴趣的新功能，然后会议的主题就被带跑偏了，大家开很久的会，但是最后盘点下来，却没有什么核心和明确的新方向。所以在新阶段，我们提前确认好了核心的几个任务，所以的发展个更新都围绕这些新任务展开，即使有新的想法，也只是先记录下来，之后在拓展<br />
+2.专注自己想要的，忽略了真实的客户需求<br />
+在前期，我们设置了很多“小巧思”“小惊喜”的功能在产品的不同界面，但是真的给身边朋友使用的时候却发现，大家打开页面，连最基本的几个功能都不知道如何使用，甚至忘记了设置语言切换。客户想要的基本功能我们都没有实现，导致一阶段测试的时候，部分用户都没有继续使用的想法。所以在新阶段，我们以真实的用户体验为核心路径，但同时也进行挑选，不尝试满足所有用户的所有需求。</p>
+<h4>做好的软件，满足用户的需求，在这方面你们有什么需要改进的？注意：不要搞功能数量的线性增加，而是在目前有限的资源，变化（人员变动）条件下，如何让典型用户在典型场景中满意？</h4>
+<p>1.真实场景下的使用与反馈之后，记录真是的需求<br />
+2.尽量让功能简洁，避免用户需要过多的操作<br />
+3.转换思维，以初次使用的用户视角来审视产品<br />
+4.捉住产品核心功能进行拓展，避免在无关紧要的功能上浪费过多的时间</p>
+<h4>以好的方式来做软件：如何让软件工程的质量得到提高：</h4>
+<p><strong>新人能快速上手么</strong><br />
+可以，我们简化了之前的操作与界面，用户大家就可以开始写日记<br />
+<strong>每天有自动的 持续集成，持续构建，持续测试，持续发布么？（如何利用AI 工具？）</strong> <br />
+有<br />
+<strong>代码是可维护的么，能通过自动代码质量扫描么？（如何利用AI 工具？）</strong><br />
+是可维护的，我们使用 pyright 来进行代码扫描，可以预防例如缺少依赖、冗余代码等问题<br />
+<strong>代码是安全的么，你们是如何保障的？（如何利用AI 工具？）</strong><br />
+是安全的</p>
+<p><img alt="|600" src="beta%20stage%20plan.png" /></p>
+<h4>我们 beta 阶段计划的产品，真的解决了新闻稿中描述的用户核心痛点吗？</h4>
+<p>新闻稿“Echo是一个AI驱动的写作伙伴，在写作过程中提供多视角实时评论。核心创新：渐进式评论（写作过程中自然出现，不打断思路）+多声音系统（12种AI人格，多视角反馈）。”<br />
+已完成（AI人格现有30+，卡组10+）</p>
+<h4>我们的发布和上手流程，足以支撑“获得很多用户”吗？</h4>
+<p>网页版——无需安装部署<br />
+已解决使用复杂、语言不通等问题<br />
+Beta阶段提升用户体验——语音输入等<br />
+已制定beta计划，基本路线未进行大规模修改</p>
+        </div>
+    </div>
+</body>
+</html>
