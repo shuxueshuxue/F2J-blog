@@ -44,9 +44,17 @@
 <h4>以好的方式来做软件：如何让软件工程的质量得到提高：</h4>
 <p><strong>新人能快速上手么</strong><br />
 可以，我们简化了之前的操作与界面，用户大家就可以开始写日记<br />
-<strong>每天有自动的 持续集成，持续构建，持续测试，持续发布么？（如何利用AI 工具？）</strong> <br />
-有<br />
-<strong>代码是可维护的么，能通过自动代码质量扫描么？（如何利用AI 工具？）</strong><br />
+<strong>每天有自动的 持续集成，持续构建，持续测试，持续发布么？（如何利用AI 工具？）</strong> </p>
+<ul>
+<li>后端：Docker 容器 + SQLite 数据卷 + 运行时注入 <code>models.json</code>（GH secret）。</li>
+<li>前端：Vite 构建出的静态文件，通过 Nginx 直接服务。</li>
+<li>CI（PR）：构建 + 后端烟雾测试（容器起、init DB、注册用户、创建 deck）。</li>
+<li>CD（main）：推镜像 + 远程拉取并重新启动容器；前端同步 rsync/scp 静态资源。</li>
+</ul>
+<p>部署方式对比（后端 vs 前端）<br />
+- 后端：<code>Dockerfile</code> → GHCR 镜像 → 服务器 <code>docker run -d -p 127.0.0.1:8765:8765 -v data:/app/data -v models.json:/app/models.json:ro</code>；Nginx 反代 <code>/ink-and-memory/api</code> → <code>127.0.0.1:8765</code>。<br />
+- 前端：<code>npm ci &amp;&amp; npm run build</code> → <code>frontend/dist/</code> 静态文件 → 同步到 <code>/var/www/lexicalmathical.com/ink-and-memory/</code>，由 Nginx 直接返回。</p>
+<p><strong>代码是可维护的么，能通过自动代码质量扫描么？（如何利用AI 工具？）</strong><br />
 是可维护的，我们使用 pyright 来进行代码扫描，可以预防例如缺少依赖、冗余代码等问题<br />
 <strong>代码是安全的么，你们是如何保障的？（如何利用AI 工具？）</strong><br />
 是安全的</p>
