@@ -151,41 +151,6 @@ Beta阶段提升用户体验——语音输入等<br />
 已制定beta计划，基本路线未进行大规模修改</p>
 <hr />
 <h1>软件工程课所有 Beta 计划打分</h1>
-<h4>在 postmortem 上发现的 “踩过的坑”，未能处理的风险，你们发现了什么根本原因，如何改进，避免？</h4>
-<p>1.大家都有想要实现的“新功能”<br />
-之前几次开会，大家都有自己感兴趣的新功能，然后会议的主题就被带跑偏了，大家开很久的会，但是最后盘点下来，却没有什么核心和明确的新方向。所以在新阶段，我们提前确认好了核心的几个任务，所以的发展个更新都围绕这些新任务展开，即使有新的想法，也只是先记录下来，之后在拓展<br />
-2.专注自己想要的，忽略了真实的客户需求<br />
-在前期，我们设置了很多“小巧思”“小惊喜”的功能在产品的不同界面，但是真的给身边朋友使用的时候却发现，大家打开页面，连最基本的几个功能都不知道如何使用，甚至忘记了设置语言切换。客户想要的基本功能我们都没有实现，导致一阶段测试的时候，部分用户都没有继续使用的想法。所以在新阶段，我们以真实的用户体验为核心路径，但同时也进行挑选，不尝试满足所有用户的所有需求。</p>
-<h4>做好的软件，满足用户的需求，在这方面你们有什么需要改进的？注意：不要搞功能数量的线性增加，而是在目前有限的资源，变化（人员变动）条件下，如何让典型用户在典型场景中满意？</h4>
-<p>1.真实场景下的使用与反馈之后，记录真实的需求<br />
-2.尽量让功能简洁，避免用户需要过多的操作<br />
-3.转换思维，以初次使用的用户视角来审视产品<br />
-4.捉住产品核心功能进行拓展，避免在无关紧要的功能上浪费过多的时间</p>
-<h4>以好的方式来做软件：如何让软件工程的质量得到提高：</h4>
-<p><strong>新人能快速上手么</strong><br />
-可以，在 vibe coding 的过程中，我们记录了详细的 AGENTS.md 和 operation_book.md，即便新人不用 AI 也能快速理解项目。<br />
-vibe coding 的设计详见 <a href="https://github.com/shuxueshuxue/vibe-coding-tutorial/blob/main/Envision%20of%20next%20generation%20IDE.md">vibe-coding-tutorial/Envision of next generation IDE.md at main · shuxueshuxue/vibe-coding-tutorial · GitHub</a></p>
-<p><strong>每天有自动的 持续集成，持续构建，持续测试，持续发布么？（如何利用AI 工具？）</strong> <br />
-- 后端：Docker 容器 + SQLite 数据卷 + 运行时注入 <code>models.json</code>（GH secret）。<br />
-- 前端：Vite 构建出的静态文件，通过 Nginx 直接服务。<br />
-- CI（PR）：构建 + 后端烟雾测试（容器起、init DB、注册用户、创建 deck）。<br />
-- CD（main）：推镜像 + 远程拉取并重新启动容器；前端同步 rsync/scp 静态资源。</p>
-<p>部署方式对比（后端 vs 前端）<br />
-- 后端：<code>Dockerfile</code> → GHCR 镜像 → 服务器 <code>docker run -d -p 127.0.0.1:8765:8765 -v data:/app/data -v models.json:/app/models.json:ro</code>；Nginx 反代 <code>/ink-and-memory/api</code> → <code>127.0.0.1:8765</code>。<br />
-- 前端：<code>npm ci &amp;&amp; npm run build</code> → <code>frontend/dist/</code> 静态文件 → 同步到 <code>/var/www/lexicalmathical.com/ink-and-memory/</code>，由 Nginx 直接返回。</p>
-<p><strong>代码是可维护的么，能通过自动代码质量扫描么？（如何利用AI 工具？）</strong><br />
-是可维护的，我们使用 pyright 来进行代码扫描，可以预防例如缺少依赖、冗余代码等问题</p>
-<p><img alt="|600" src="/assets/images/beta%20stage%20plan.png" /></p>
-<h4>我们 beta 阶段计划的产品，真的解决了新闻稿中描述的用户核心痛点吗？</h4>
-<p>新闻稿“Echo是一个AI驱动的写作伙伴，在写作过程中提供多视角实时评论。核心创新：渐进式评论（写作过程中自然出现，不打断思路）+多声音系统（12种AI人格，多视角反馈）。”<br />
-已完成（AI人格现有30+，卡组10+）</p>
-<h4>我们的发布和上手流程，足以支撑“获得很多用户”吗？</h4>
-<p>网页版——无需安装部署<br />
-已解决使用复杂、语言不通等问题<br />
-Beta阶段提升用户体验——语音输入等<br />
-已制定beta计划，基本路线未进行大规模修改</p>
-<hr />
-<h1>软件工程课所有 Beta 计划打分</h1>
 <p>FocusPet 65 分</p>
         </div>
     </div>
