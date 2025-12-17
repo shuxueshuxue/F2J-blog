@@ -86,6 +86,11 @@ blockquote {
     font-style: italic;
 }
 
+del {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
