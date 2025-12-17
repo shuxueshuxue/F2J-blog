@@ -46,7 +46,7 @@
 <h3>Deliver</h3>
 <p>见 1.5</p>
 <h1>软件工程</h1>
-<p>我们团队成员都比较缺乏前端设计、开发的经验，这一路过来，主要是通过 vibe coding <del>和 AI  相爱相杀</del> 边做边学，我们相信自己已经做到了高质量的软件的工程，这体现在以下方面：<br />
+<p>我们团队成员都比较缺乏前端设计、开发的经验，这一路过来，主要是通过 vibe coding <del>和 AI  斗智斗勇</del> 边做边学，我们相信自己已经做到了高质量的软件的工程，这体现在以下方面：<br />
 1. 技术栈现代。我们使用 uv 包管理，docker 部署，我们的 Agent 功能基于自研 Agent 框架 PolyCLI，构建起来快速稳定（代码量极少，native integration with fastapi），且自动具备了丰富的日志功能。<br />
 2. 我们记录下了 vibe coding 过程中遇到的各种有趣的案例，不断积累 vibe coding 经验，形成了自己的理解，见仓库 <a href="https://github.com/shuxueshuxue/vibe-coding-tutorial">vibe-coding-tutorial</a><br />
 3. 我们先后制作了两款工具来解决 vibe coding 种遇到的问题：为了让不同 code agent 之间方便地交流信息，我们开发了 <a href="https://github.com/shuxueshuxue/AgentTalk">GitHub - shuxueshuxue/AgentTalk: Minimal HTTP server for AI agents to coordinate across machines and projects</a>。为了方便代码库的 context 管理，实现 Spec-driven development (SDD) ，我们开发了 <a href="https://github.com/shuxueshuxue/SpexFlow">GitHub - shuxueshuxue/SpexFlow: Node-based workflow for orchestrating codebase context and specifications for AI agents.</a>，并分享到开发者社区，四天时间就获得了 70+ star.</p>
@@ -64,7 +64,13 @@ AI + 情感陪伴现在已经是热门赛道。以往我们没有一个途径/�
 - 服务器带宽小，图片传不动 -&gt; 转换为 jpg 压缩，thumbnail 预览，浏览器缓存<br />
 - 依赖复杂，构建麻烦 -&gt; 转换为使用 uv add 而不是 uv pip install，强迫自己使用 docker 部署，终于理清了依赖<br />
 - 前端 App.tsx 3k+ 行代码过于臃肿 -&gt; 采用 service+hook+component 的模式进行模块化<br />
-- 我们不会前端设计 -&gt; 借鉴现有的产品和大模型的能力把页面做的舒服</p>
+- 我们不会前端设计 -&gt; 借鉴现有的产品和大模型的能力把页面做的舒服<br />
+- 没有中英文切换 -&gt; 加入 i18n<br />
+- 要区分日期，生成每日图片 -&gt; 所有带时间的请求都要带上时区参数<br />
+- LLM 给出不符合规范的回复怎么办 -&gt; 拒绝然后重试？那会死循环！我们将它之前犯的错误持久化，显式地放到它的 context 里面<br />
+- 语音输入本来想用浏览器自带的服务，发现国内不行 -&gt; 老老实实用后端服务 + websocket 通信实现<br />
+- 其余例如域名注册备案，SSL 证书，数据库 schema 更新等等坑实在太多就不一一列举了</p>
+<p>可以说，有了最初的想法之后，其余大多数时间都在和“可用性”做斗争。</p>
 <p>一路踩坑下来，我的心态也从「想做点很酷的东西」慢慢变成了「踏实把一件小事做好」。以前会更在意技术选型是不是足够“高级”、框架是不是够新，现在更在意的是：用户点开页面要不要等太久、哪一步交互会让人困惑、哪句话的提示能让第一次用的人不害怕。这种从“写代码爽不爽”到“别人用着顺不顺”的视角转换，对我来说是一个挺大的成长。</p>
 <p>同时，我也更能体会到：做一个和情绪、生活紧密相关的产品，需要的是耐心和谦卑。我们现在做出来的，也许还远远称不上「有灵性」，但至少是一个诚恳的起点。接下来，我希望我们能花更多时间去和真实用户一起迭代：听他们讲自己的故事，理解他们对陪伴、记忆、理解的真正期待，再一点点把这些抽象的愿望，落实为细致的交互和模型上的改动。</p>
 <p>如果有一天，哪怕只有很少一部分人，是因为这个小小的日记本，能更愿意和自己待在一起、更温柔地看待自己的情绪，那我会觉得这一路所有的绕路和返工，都是值得的。</p>
