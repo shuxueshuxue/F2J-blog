@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人总结 - F@J</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+    <link rel="stylesheet" href="/assets/style.css">
+    <script>
+      window.MathJax = {
+        tex: {inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$']]},
+        options: {skipHtmlTags: ['script','noscript','style','textarea','pre','code']}
+      };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+    <div class="page">
+        <a href="/" class="back-link">← 返回首页</a>
+        <div class="card">
+            <h1>个人总结</h1>
+            
+            <h1>现代软件工程课程个人总结（期末）</h1>
+<p><strong>第一次博客链接</strong>：<br />
+https://github.com/shuxueshuxue/vibe-coding-tutorial/blob/main/%E6%9E%84%E5%BB%BA%E4%B9%8B%E6%B3%95%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/Learn%20By%20Doing.md</p>
+<p><strong>第一次博客要求</strong>：<br />
+https://z.gitee.cn/zgca/repos/zgca/se-course/issues/table?issue=ICVHZQ</p>
+<hr />
+<h2>1. 学期初的问题，现在能自己回答了吗？</h2>
+<p>结论：<strong>大部分能回答了，但答案更“工程化”，并且更难简化。</strong></p>
+<p><strong>Q1：LLM 时代，“做中学”还有效吗？</strong><br />
+有效，但“做”的形式变了。LLM 让“能跑”更容易，但也让“理解原理”的压力变小。要让“做”继续倒逼“学”，就必须把“做”变成可验证的工程流程（文档、CI/CD、测试、复盘）。</p>
+<p><strong>Q2：vibe coding 的团队开发模式是什么？</strong><br />
+不是“特工模式”，而是<strong>高频协作 + context 管理</strong>的组织模式。我们在 Beta 计划中明确优先级、约束会议跑偏，避免“功能堆叠”。</p>
+<p><strong>Q3：LLM 时代的软件测试如何进行？</strong><br />
+测试正在变成“AI 驱动的创造性破坏 + 人工复核”。自动化烟雾测试 + 真实用户反馈是关键闭环。</p>
+<p><strong>Q4：AI 生成代码的绩效如何评估？</strong><br />
+要用“长期维护成本”衡量，而不是“短期功能完成”。AI 写代码，人来复审，核心是复杂度管理与责任边界。</p>
+<p><strong>Q5：软件工程思想还有必要吗？</strong><br />
+更必要。LLM 只降低“实现”的门槛，并没有降低“可维护、可演进”的门槛。</p>
+<hr />
+<h2>2. 仍未解决或更困惑的问题</h2>
+<ul>
+<li><strong>如何量化 AI 代码的长期维护成本？</strong> 现在还缺乏系统性的指标。</li>
+<li><strong>如何让团队保持“高速度 + 高质量”的平衡？</strong> 在交付压力下很容易退回“堆功能”。</li>
+<li><strong>如何让工程知识真正沉淀，而不是只沉淀到 LLM 的上下文里？</strong></li>
+</ul>
+<hr />
+<h2>3. 对 AI 时代软件开发的新问题</h2>
+<ul>
+<li><strong>Prompt/Context 的工程化管理</strong>：如何像管理代码一样管理 prompt？</li>
+<li><strong>成本与价值的映射</strong>：token 费用如何对应产品价值？</li>
+<li><strong>责任边界</strong>：AI 生成模块出问题，责任归谁？</li>
+</ul>
+<hr />
+<h2>4. 结合 ink-and-memory 项目 journals 的证据</h2>
+<p>项目过程证明我在“工程化”上的学习路径：</p>
+<ul>
+<li><strong>2025-11-03</strong>：大量 UI/状态 bug，意识到缺乏正确工程心智模型。</li>
+<li><strong>2025-11-04</strong>：Alpha 阶段分工计划，开始系统化拆解任务。</li>
+<li><strong>2025-11-19</strong>：Alpha 发布总结，明确核心功能与技术栈。</li>
+<li><strong>2025-11-26</strong>：Postmortem，确认 AI 工具链不足。</li>
+<li><strong>2025-12-03</strong>：Beta 计划，聚焦用户需求与核心功能。</li>
+<li><strong>2025-12-16</strong>：Beta release，总结 CI/CD、用户反馈与产品定位。</li>
+</ul>
+<p>结论：学习路径从“乱”走向“结构化”，从“功能堆叠”走向“系统权衡”。</p>
+<hr />
+<h2>5. 对 NCL 理想教学环境与课程方法的评价</h2>
+<p><strong>NCL 理想教学环境</strong>：<br />
+https://www.cnblogs.com/xinz/archive/2011/12/29/2306652.html#ncl</p>
+<h3>对本学期教学方法的价值</h3>
+<ul>
+<li><strong>公开博客作业 + 千帆竞发追踪</strong>：强迫表达，形成反思闭环。</li>
+<li><strong>结对编程（API 驱动）</strong>：让我理解“接口即契约”。</li>
+<li><strong>PQ 问答 / UX 测试</strong>：真实暴露“用户理解 != 功能实现”。</li>
+<li><strong>自由组队 + 项目选题</strong>：逼迫工程管理能力成长。</li>
+<li><strong>Alpha 后强制人员变动</strong>：非常真实，也很痛苦，但提升协作能力。</li>
+<li><strong>专家讲座 + demo</strong>：给了现实的对照与信心基准。</li>
+<li><strong>天使投资评选</strong>：引入市场视角，但后续复盘不足。</li>
+</ul>
+<h3>与理想环境的差距</h3>
+<ul>
+<li>真实用户和持续反馈仍不足，用户面偏窄。</li>
+<li>工程过程的标准化仍主要靠学生自觉。</li>
+<li>评价体系更多落在“结果”，过程质量可度量性不足。</li>
+</ul>
+<hr />
+<h2>6. 对课程中方法的补充感想</h2>
+<p>期中反馈之后，继续感受到最大的价值是<strong>“逼迫表达与复盘”</strong>。如果没有博客和阶段总结，我很难意识到团队在早期的混乱与路径偏差。</p>
+<hr />
+<h2>7. 自我评价（能力提升最大项）</h2>
+<h3>智能开发与人机协同（第5维）</h3>
+<ul>
+<li>课前：2 → 课后：4</li>
+<li>依据：能主导 prompt、context、工具链，形成团队级协作流程。</li>
+</ul>
+<h3>云原生与约束工程化（第3维）</h3>
+<ul>
+<li>课前：2 → 课后：3</li>
+<li>依据：建立 CI/CD、docker 部署与烟雾测试。</li>
+</ul>
+<h3>工程领导与系统权衡（第6维）</h3>
+<ul>
+<li>课前：2 → 课后：3</li>
+<li>依据：开始能做优先级权衡，理解“核心功能优先”。</li>
+</ul>
+<h3>AI 原生架构与沟通设计（第2维）</h3>
+<ul>
+<li>课前：2 → 课后：3</li>
+<li>依据：开始把架构设计显性化，并能跨成员传达。</li>
+</ul>
+<hr />
+<h2>8. 结语</h2>
+<p>AI 时代的软件工程不是单纯的技术问题，而是“协作、质量与责任”的问题。LLM 能让我们更快到达“能跑”，但<strong>真正的挑战在于：如何让系统在 6 个月后仍可维护。</strong></p>
+<p>这个学期让我意识到：<br />
+- 工程能力并非功能数量，而是“可持续交付能力”。<br />
+- 课程的最大价值不是作业本身，而是逼迫我们把“工程经验”表达出来。</p>
+<p>我依然有疑惑，但已经确定方向。未来需要做的，是把这些经验进一步固化成真正可复用的方法论。</p>
+        </div>
+    </div>
+</body>
+</html>
