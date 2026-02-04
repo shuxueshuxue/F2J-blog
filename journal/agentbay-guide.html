@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentBay Deep Dive: OSS, Context, and Session Lifecycle - F@J</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+    <link rel="stylesheet" href="/assets/style.css">
+    <script>
+      window.MathJax = {
+        tex: {inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$']]},
+        options: {skipHtmlTags: ['script','noscript','style','textarea','pre','code']}
+      };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+    <div class="page">
+        <a href="/" class="back-link">← 返回首页</a>
+        <div class="card">
+            <h1>AgentBay Deep Dive: OSS, Context, and Session Lifecycle</h1>
+            <p style="color: var(--text-muted); margin-top: 4px;">agentbay-guide</p>
+            <h1>AgentBay Comprehensive Guide</h1>
+<p>AgentBay is Alibaba Cloud's sandbox environment service that provides AI agents with isolated cloud containers for executing code, running commands, and interacting with browsers. Think of it as "disposable cloud computers on demand."</p>
+<p>This guide covers the internals: OSS, Context, File Sync, and Session Lifecycle.</p>
+<hr />
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#1-oss-object-storage-service">OSS (Object Storage Service)</a></li>
+<li><a href="#2-context">Context</a></li>
+<li><a href="#3-mounting--file-sync">Mounting / File Sync</a></li>
+<li><a href="#4-session-lifecycle">Session Lifecycle</a></li>
+<li><a href="#5-complete-working-example">Complete Working Example</a></li>
+</ol>
+<hr />
+<h2>1. OSS (Object Storage Service)</h2>
+<h3>What is OSS?</h3>
+<p>OSS (Object Storage Service) is Alibaba Cloud's distributed object storage system. In AgentBay, OSS serves as the <strong>persistent storage layer</strong> that bridges:</p>
+<ul>
+<li>Your local machine</li>
+<li>The ephemeral cloud session containers</li>
+<li>Long-term persistent contexts</li>
+</ul>
+<pre><code>+----------------+       +-------+       +------------------+
+|  Local Machine | &lt;---&gt; |  OSS  | &lt;---&gt; | Session Container|
++----------------+       +-------+       +------------------+
+                             ^
+                             |
+                      +------+------+
+                      |   Context   |
+                      | (Persistent)|
+                      +-------------+
+</code></pre>
+<h3>How OSS Works Technically</h3>
+<p>OSS operates on a bucket/object model:</p>
+<ul>
+<li><strong>Bucket</strong>: A container for objects (like a root folder)</li>
+<li><strong>Object</strong>: A file stored in a bucket, identified by a key (path)</li>
+</ul>
+<p>AgentBay uses <strong>pre-signed URLs</strong> for secure, temporary access:</p>
+<ol>
+<li>Client requests a pre-signed URL from AgentBay API</li>
+<li>AgentBay generates a time-limited URL with embedded credentials</li>
+<li>Client uploads/downloads directly to/from OSS using the URL</li>
+<li>URL expires after a set time (typically 1 hour)</li>
+</ol>
+<h3>How AgentBay Uses OSS Under the Hood</h3>
+<p>AgentBay abstracts OSS into two layers:</p>
+<p><strong>Layer 1: Direct OSS Operations</strong> (via <code>session.oss</code>)</p>
+<pre><code class="language-python"># Initialize OSS environment with STS credentials
+session.oss.env_init(
+    access_key_id=&quot;your_sts_access_key_id&quot;,
+    access_key_secret=&quot;your_sts_access_key_secret&quot;,
+    security_token=&quot;your_sts_security_token&quot;
+)
+
+# Upload from session container to OSS
+session.oss.upload(bucket=&quot;my-bucket&quot;, object=&quot;data/file.txt&quot;, path=&quot;/tmp/file.txt&quot;)
+
+# Download from OSS to session container
+session.oss.download(bucket=&quot;my-bucket&quot;, object=&quot;data/file.txt&quot;, path=&quot;/tmp/file.txt&quot;)
+
+# Anonymous upload/download (for public URLs)
+session.oss.upload_anonymous(url=&quot;https://example.com/upload&quot;, path=&quot;/tmp/file.txt&quot;)
+session.oss.download_anonymous(url=&quot;https://example.com/file.txt&quot;, path=&quot;/tmp/file.txt&quot;)
+</code></pre>
+<p><strong>Layer 2: Context-Based Storage</strong> (via <code>agent_bay.context</code>)</p>
+<p>Contexts use OSS internally but provide a higher-level abstraction:</p>
+<pre><code class="language-python"># Get pre-signed upload URL for a context file
+url_result = agent_bay.context.get_file_upload_url(context_id, &quot;/path/to/file.txt&quot;)
+# Returns: FileUrlResult with url and expire_time
+
+# Get pre-signed download URL
+url_result = agent_bay.context.get_file_download_url(context_id, &quot;/path/to/file.txt&quot;)
+</code></pre>
+<h3>OSS Pricing Model</h3>
+<p>OSS pricing is based on:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Price (China Regions)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Storage</td>
+<td>~0.12 CNY/GB/month</td>
+</tr>
+<tr>
+<td>PUT/COPY/POST requests</td>
+<td>~0.01 CNY per 10,000 requests</td>
+</tr>
+<tr>
+<td>GET requests</td>
+<td>~0.01 CNY per 10,000 requests</td>
+</tr>
+<tr>
+<td>Data transfer (outbound)</td>
+<td>~0.50 CNY/GB</td>
+</tr>
+</tbody>
+</table>
+<p>AgentBay bundles OSS costs into its pricing, so you typically don't pay OSS separately.</p>
+<hr />
+<h2>2. Context</h2>
+<h3>What is a Context?</h3>
+<p>A <strong>Context</strong> is AgentBay's abstraction for <strong>persistent storage</strong> that survives session termination. While sessions are ephemeral (everything is lost when deleted), contexts persist.</p>
+<pre><code>Session 1 (ephemeral)     Session 2 (ephemeral)     Session 3 (ephemeral)
+      |                         |                         |
+      v                         v                         v
++-----+-------------------------+-------------------------+-----+
+|                         Context (persistent)                  |
+|                    (stored in OSS under the hood)             |
++---------------------------------------------------------------+
+</code></pre>
+<h3>Context vs Session</h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Session</th>
+<th>Context</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lifetime</td>
+<td>Ephemeral (deleted on cleanup)</td>
+<td>Persistent (survives sessions)</td>
+</tr>
+<tr>
+<td>Storage</td>
+<td>Container filesystem</td>
+<td>OSS-backed storage</td>
+</tr>
+<tr>
+<td>Billing</td>
+<td>Per-second while running</td>
+<td>Per-GB stored + retention policy</td>
+</tr>
+<tr>
+<td>Use case</td>
+<td>Compute environment</td>
+<td>Data persistence</td>
+</tr>
+</tbody>
+</table>
+<h3>How Context Relates to OSS</h3>
+<p>Contexts are stored in OSS buckets managed by AgentBay:</p>
+<pre><code>OSS Bucket (AgentBay-managed)
+├── context-{context_id}/
+│   ├── file1.txt
+│   ├── dir/
+│   │   └── file2.txt
+│   └── ...
+</code></pre>
+<p>When you mount a context to a session, AgentBay:<br />
+1. Downloads context files from OSS to the session container<br />
+2. Monitors for changes during the session<br />
+3. Uploads modified files back to OSS when session ends</p>
+<h3>Context Lifecycle and Retention Policies</h3>
+<p>Contexts support configurable retention via <code>RecyclePolicy</code>:</p>
+<pre><code class="language-python">from agentbay.context_sync import RecyclePolicy, Lifecycle
+
+# Available lifecycle options
+Lifecycle.LIFECYCLE_1DAY      # Keep for 1 day
+Lifecycle.LIFECYCLE_3DAYS     # Keep for 3 days
+Lifecycle.LIFECYCLE_5DAYS     # Keep for 5 days
+Lifecycle.LIFECYCLE_10DAYS    # Keep for 10 days
+Lifecycle.LIFECYCLE_15DAYS    # Keep for 15 days
+Lifecycle.LIFECYCLE_30DAYS    # Keep for 30 days
+Lifecycle.LIFECYCLE_90DAYS    # Keep for 90 days
+Lifecycle.LIFECYCLE_180DAYS   # Keep for 180 days
+Lifecycle.LIFECYCLE_360DAYS   # Keep for 360 days
+Lifecycle.LIFECYCLE_FOREVER   # Keep permanently (default)
+</code></pre>
+<h3>Context States</h3>
+<p>Contexts can be in the following states:</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>available</code></td>
+<td>Ready for use</td>
+</tr>
+<tr>
+<td><code>in-use</code></td>
+<td>Currently mounted to a session</td>
+</tr>
+<tr>
+<td><code>pre-available</code></td>
+<td>Being prepared</td>
+</tr>
+<tr>
+<td><code>clearing</code></td>
+<td>Data is being cleared</td>
+</tr>
+</tbody>
+</table>
+<h3>Creating, Listing, Deleting Contexts</h3>
+<p><strong>Create a Context:</strong></p>
+<pre><code class="language-python">from agentbay import AgentBay
+
+agent_bay = AgentBay(api_key=&quot;your_api_key&quot;)
+
+# Create a new context (or get existing one with same name)
+result = agent_bay.context.get(name=&quot;my-project-data&quot;, create=True)
+if result.success:
+    context = result.context
+    print(f&quot;Context ID: {context.id}&quot;)
+    print(f&quot;Context Name: {context.name}&quot;)
+    print(f&quot;Created At: {context.created_at}&quot;)
+</code></pre>
+<p><strong>List All Contexts:</strong></p>
+<pre><code class="language-python">from agentbay.context import ContextListParams
+
+# List with pagination
+params = ContextListParams(max_results=20)
+result = agent_bay.context.list(params)
+
+if result.success:
+    for ctx in result.contexts:
+        print(f&quot;ID: {ctx.id}, Name: {ctx.name}&quot;)
+
+    # Get next page if available
+    if result.next_token:
+        params.next_token = result.next_token
+        next_result = agent_bay.context.list(params)
+</code></pre>
+<p><strong>Get Context by ID or Name:</strong></p>
+<pre><code class="language-python"># By name
+result = agent_bay.context.get(name=&quot;my-context&quot;)
+
+# By ID
+result = agent_bay.context.get(context_id=&quot;ctx-04bdwfj7u22a1s30g&quot;)
+</code></pre>
+<p><strong>Update Context Name:</strong></p>
+<pre><code class="language-python">result = agent_bay.context.get(name=&quot;old-name&quot;)
+if result.success:
+    result.context.name = &quot;new-name&quot;
+    update_result = agent_bay.context.update(result.context)
+</code></pre>
+<p><strong>Delete a Context:</strong></p>
+<pre><code class="language-python">result = agent_bay.context.get(name=&quot;my-context&quot;)
+if result.success:
+    delete_result = agent_bay.context.delete(result.context)
+    print(f&quot;Deleted: {delete_result.success}&quot;)
+</code></pre>
+<p><strong>Clear Context Data (without deleting the context):</strong></p>
+<pre><code class="language-python"># Synchronous clear (waits for completion)
+clear_result = agent_bay.context.clear(context_id, timeout=60)
+
+# Asynchronous clear (returns immediately)
+clear_result = agent_bay.context.clear_async(context_id)
+
+# Check clear status
+status_result = agent_bay.context.get_clear_status(context_id)
+print(f&quot;Status: {status_result.status}&quot;)  # &quot;clearing&quot; or &quot;available&quot;
+</code></pre>
+<p><strong>List Files in a Context:</strong></p>
+<pre><code class="language-python">files_result = agent_bay.context.list_files(
+    context_id=&quot;ctx-xxx&quot;,
+    parent_folder_path=&quot;/&quot;,
+    page_number=1,
+    page_size=50
+)
+
+for entry in files_result.entries:
+    print(f&quot;{entry.file_name} ({entry.file_type}) - {entry.size} bytes&quot;)
+</code></pre>
+<hr />
+<h2>3. Mounting / File Sync</h2>
+<h3>How ContextSync Works</h3>
+<p><code>ContextSync</code> defines how a context is mounted to a session:</p>
+<pre><code class="language-python">from agentbay.context_sync import ContextSync, SyncPolicy
+
+# Basic mount
+context_sync = ContextSync(
+    context_id=&quot;ctx-xxx&quot;,
+    path=&quot;/workspace&quot;  # Mount point in session container
+)
+
+# Mount with custom policy
+context_sync = ContextSync(
+    context_id=&quot;ctx-xxx&quot;,
+    path=&quot;/workspace&quot;,
+    policy=SyncPolicy.default()
+)
+</code></pre>
+<h3>SyncPolicy Options</h3>
+<p><code>SyncPolicy</code> controls upload, download, and lifecycle behavior:</p>
+<pre><code class="language-python">from agentbay.context_sync import (
+    SyncPolicy,
+    UploadPolicy,
+    DownloadPolicy,
+    DeletePolicy,
+    ExtractPolicy,
+    RecyclePolicy,
+    BWList,
+    WhiteList,
+    UploadStrategy,
+    DownloadStrategy,
+    UploadMode,
+    Lifecycle
+)
+
+# Full policy configuration
+policy = SyncPolicy(
+    upload_policy=UploadPolicy(
+        auto_upload=True,  # Auto-upload on session end
+        upload_strategy=UploadStrategy.UPLOAD_BEFORE_RESOURCE_RELEASE,
+        upload_mode=UploadMode.FILE  # or UploadMode.ARCHIVE
+    ),
+    download_policy=DownloadPolicy(
+        auto_download=True,  # Auto-download on session start
+        download_strategy=DownloadStrategy.DOWNLOAD_ASYNC
+    ),
+    delete_policy=DeletePolicy(
+        sync_local_file=True  # Sync deletions to context
+    ),
+    extract_policy=ExtractPolicy(
+        extract=True,  # Extract archives after download
+        delete_src_file=True,  # Delete archive after extraction
+        extract_current_folder=False
+    ),
+    recycle_policy=RecyclePolicy(
+        lifecycle=Lifecycle.LIFECYCLE_30DAYS,
+        paths=[&quot;&quot;]  # Apply to all paths
+    ),
+    bw_list=BWList(
+        white_lists=[
+            WhiteList(path=&quot;/important&quot;, exclude_paths=[&quot;/important/temp&quot;])
+        ]
+    )
+)
+</code></pre>
+<h3>What Happens When Session Starts with a Context</h3>
+<pre><code>+-------------------+
+| 1. CreateSession  |
+|    with context   |
++--------+----------+
+         |
+         v
++-------------------+
+| 2. AgentBay API   |
+|    provisions     |
+|    container      |
++--------+----------+
+         |
+         v
++-------------------+
+| 3. Download from  |
+|    OSS to mount   |
+|    point          |
++--------+----------+
+         |
+         v
++-------------------+
+| 4. Poll context   |
+|    status until   |
+|    &quot;Success&quot;      |
++--------+----------+
+         |
+         v
++-------------------+
+| 5. Session ready  |
+|    Files at       |
+|    /workspace     |
++-------------------+
+</code></pre>
+<p><strong>Code flow:</strong></p>
+<pre><code class="language-python"># In AgentBay.create():
+if needs_context_sync:
+    self._wait_for_context_synchronization(session)
+
+# _wait_for_context_synchronization polls session.context.info()
+# until all context_status_data items have status &quot;Success&quot; or &quot;Failed&quot;
+</code></pre>
+<h3>What Happens When Session Ends</h3>
+<pre><code>+-------------------+
+| 1. session.delete |
+|    (sync_context  |
+|     =True)        |
++--------+----------+
+         |
+         v
++-------------------+
+| 2. Trigger        |
+|    context.sync() |
+|    (upload mode)  |
++--------+----------+
+         |
+         v
++-------------------+
+| 3. Upload changed |
+|    files to OSS   |
++--------+----------+
+         |
+         v
++-------------------+
+| 4. Poll until     |
+|    sync complete  |
++--------+----------+
+         |
+         v
++-------------------+
+| 5. Delete session |
+|    container      |
++-------------------+
+</code></pre>
+<p><strong>Code:</strong></p>
+<pre><code class="language-python"># Delete with sync
+agent_bay.delete(session, sync_context=True)
+
+# Or manually sync before delete
+session.context.sync(mode=&quot;upload&quot;)
+agent_bay.delete(session)
+</code></pre>
+<h3>upload_file() and download_file() Methods</h3>
+<p>These methods use pre-signed URLs for direct file transfer:</p>
+<p><strong>Upload (Local -&gt; Session Container):</strong></p>
+<pre><code class="language-python"># Upload a local file to the session's mounted context path
+result = session.filesystem.upload_file(
+    local_path=&quot;/local/path/file.txt&quot;,
+    remote_path=&quot;/workspace/file.txt&quot;,  # Must be within context mount
+    content_type=&quot;text/plain&quot;,
+    wait=True,  # Wait for sync to complete
+    wait_timeout=30.0,
+    poll_interval=1.5
+)
+
+if result.success:
+    print(f&quot;Uploaded {result.bytes_sent} bytes&quot;)
+    print(f&quot;ETag: {result.etag}&quot;)
+</code></pre>
+<p><strong>Download (Session Container -&gt; Local):</strong></p>
+<pre><code class="language-python">result = session.filesystem.download_file(
+    remote_path=&quot;/workspace/results/output.txt&quot;,
+    local_path=&quot;/local/downloads/output.txt&quot;,
+    overwrite=True,
+    wait=True,
+    wait_timeout=300.0
+)
+
+if result.success:
+    print(f&quot;Downloaded {result.bytes_received} bytes&quot;)
+</code></pre>
+<p><strong>Under the hood:</strong></p>
+<pre><code>Upload Flow:
+1. Get pre-signed upload URL from context service
+2. HTTP PUT file to OSS via pre-signed URL
+3. Trigger session.context.sync(mode=&quot;download&quot;) to sync OSS -&gt; container
+4. Poll session.context.info() until task completes
+
+Download Flow:
+1. Trigger session.context.sync(mode=&quot;upload&quot;) to sync container -&gt; OSS
+2. Poll until sync completes
+3. Get pre-signed download URL from context service
+4. HTTP GET file from OSS via pre-signed URL
+5. Save to local path
+</code></pre>
+<h3>Limitations</h3>
+<p><strong>MQTT Message Size Limit (63KB):</strong></p>
+<p>The AgentBay SDK communicates with session containers via MQTT. Messages are limited to 63KB.</p>
+<p>For <code>write_file()</code>, the SDK automatically chunks large content:</p>
+<pre><code class="language-python"># From filesystem.py
+MQTT_SIZE_LIMIT = 63 * 1024  # 63KB = 64512 bytes
+MAX_CONTENT_BYTES = 51 * 1024  # 51KB safe limit after JSON overhead
+
+# Large files are automatically chunked
+session.filesystem.write_file(&quot;/tmp/large.txt&quot;, large_content)
+# Internally splits into 51KB chunks, writes first chunk with &quot;overwrite&quot;,
+# subsequent chunks with &quot;append&quot;
+</code></pre>
+<p><strong>For files larger than a few MB, use <code>upload_file()</code> instead of <code>write_file()</code>.</strong></p>
+<p><strong>Other Limitations:</strong></p>
+<ul>
+<li>Context names must be unique within your account</li>
+<li>Wildcard patterns not supported in <code>RecyclePolicy.paths</code></li>
+<li>Maximum concurrent sessions depends on your plan (basic: 10)</li>
+</ul>
+<hr />
+<h2>4. Session Lifecycle</h2>
+<h3>All Session States</h3>
+<pre><code class="language-python">from agentbay.enums import SessionStatus
+
+SessionStatus.RUNNING   # Session is active and usable
+SessionStatus.PAUSING   # Transitioning to paused state
+SessionStatus.PAUSED    # Session is paused (not billed for compute)
+SessionStatus.RESUMING  # Transitioning from paused to running
+SessionStatus.DELETING  # Being deleted
+SessionStatus.DELETED   # Fully deleted (terminal state)
+</code></pre>
+<h3>State Transitions Diagram</h3>
+<pre><code>                    +----------+
+                    |  CREATE  |
+                    +----+-----+
+                         |
+                         v
++----------+       +-----------+       +----------+
+| RESUMING | &lt;---&gt; |  RUNNING  | &lt;---&gt; | PAUSING  |
++----------+       +-----+-----+       +----------+
+     ^                   |                   |
+     |                   v                   v
+     |             +-----------+       +----------+
+     +-------------|  PAUSED   |&lt;------+          |
+                   +-----------+                  |
+                         |                        |
+                         v                        |
+                   +-----------+                  |
+                   | DELETING  |&lt;-----------------+
+                   +-----+-----+
+                         |
+                         v
+                   +-----------+
+                   |  DELETED  |
+                   +-----------+
+</code></pre>
+<h3>How to Create, Pause, Resume, Delete Sessions</h3>
+<p><strong>Create:</strong></p>
+<pre><code class="language-python">from agentbay import AgentBay
+from agentbay.session_params import CreateSessionParams
+
+agent_bay = AgentBay(api_key=&quot;your_key&quot;)
+
+# Basic creation
+result = agent_bay.create()
+session = result.session
+
+# With parameters
+params = CreateSessionParams(
+    image_id=&quot;linux_latest&quot;,
+    labels={&quot;project&quot;: &quot;my-project&quot;, &quot;env&quot;: &quot;dev&quot;}
+)
+result = agent_bay.create(params)
+</code></pre>
+<p><strong>Pause (Beta):</strong></p>
+<pre><code class="language-python"># Pause and wait for PAUSED state
+pause_result = agent_bay.beta_pause(session, timeout=600, poll_interval=2.0)
+# Or: pause_result = session.beta_pause(timeout=600)
+
+if pause_result.success:
+    print(f&quot;Session paused. Status: {pause_result.status}&quot;)
+
+# Fire-and-forget pause (don't wait)
+pause_result = agent_bay.beta_pause_async(session)
+# Or: pause_result = session.beta_pause_async()
+</code></pre>
+<p><strong>Resume (Beta):</strong></p>
+<pre><code class="language-python"># Resume and wait for RUNNING state
+resume_result = agent_bay.beta_resume(session, timeout=600, poll_interval=2.0)
+# Or: resume_result = session.beta_resume(timeout=600)
+
+if resume_result.success:
+    print(f&quot;Session resumed. Status: {resume_result.status}&quot;)
+
+# Fire-and-forget resume
+resume_result = agent_bay.beta_resume_async(session)
+</code></pre>
+<p><strong>Delete:</strong></p>
+<pre><code class="language-python"># Delete without syncing context
+delete_result = agent_bay.delete(session)
+
+# Delete with context sync (uploads changes first)
+delete_result = agent_bay.delete(session, sync_context=True)
+
+# Or via session object
+delete_result = session.delete(sync_context=True)
+</code></pre>
+<p><strong>Get Session Status:</strong></p>
+<pre><code class="language-python">status_result = session.get_status()
+print(f&quot;Status: {status_result.status}&quot;)  # RUNNING, PAUSED, etc.
+</code></pre>
+<h3>Timeout and Auto-Cleanup</h3>
+<p>Sessions have idle timeouts configured by AgentBay. If a session is idle for too long, it may be automatically cleaned up.</p>
+<p>To prevent this:<br />
+- Keep sessions active with periodic commands<br />
+- Use pause/resume for long-running workflows<br />
+- Delete sessions explicitly when done</p>
+<h3>Billing Implications of Each State</h3>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Compute Billing</th>
+<th>Storage Billing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RUNNING</td>
+<td>Yes (per-second)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>PAUSING</td>
+<td>Yes (transitioning)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>PAUSED</td>
+<td><strong>No</strong></td>
+<td>Yes (reduced)</td>
+</tr>
+<tr>
+<td>RESUMING</td>
+<td>Yes (transitioning)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>DELETING</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>DELETED</td>
+<td>No</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key insight:</strong> Pausing sessions stops compute billing while preserving state.</p>
+<h3>Code Examples</h3>
+<p><strong>List Sessions with Filtering:</strong></p>
+<pre><code class="language-python"># List all running sessions
+result = agent_bay.list(status=&quot;RUNNING&quot;)
+
+# List with labels
+result = agent_bay.list(
+    labels={&quot;project&quot;: &quot;my-project&quot;},
+    page=1,
+    limit=20
+)
+
+for session_info in result.session_ids:
+    print(f&quot;ID: {session_info['sessionId']}, Status: {session_info['sessionStatus']}&quot;)
+</code></pre>
+<p><strong>Get Existing Session:</strong></p>
+<pre><code class="language-python"># Reconnect to an existing session
+result = agent_bay.get(session_id=&quot;sess-xxx&quot;)
+if result.success:
+    session = result.session
+    # Continue using the session
+    cmd_result = session.command.execute_command(&quot;ls -la&quot;)
+</code></pre>
+<hr />
+<h2>5. Complete Working Example</h2>
+<p>Here's a full example showing the complete workflow:</p>
+<pre><code class="language-python">from agentbay import AgentBay
+from agentbay.session_params import CreateSessionParams
+from agentbay.context_sync import (
+    ContextSync,
+    SyncPolicy,
+    UploadPolicy,
+    DownloadPolicy,
+    RecyclePolicy,
+    Lifecycle
+)
+import os
+
+def main():
+    # Initialize client
+    api_key = os.getenv(&quot;AGENTBAY_API_KEY&quot;)
+    agent_bay = AgentBay(api_key=api_key)
+
+    session = None
+    context = None
+
+    try:
+        # ============================================
+        # Step 1: Create or get a persistent context
+        # ============================================
+        print(&quot;Creating context...&quot;)
+        ctx_result = agent_bay.context.get(name=&quot;my-project-workspace&quot;, create=True)
+        if not ctx_result.success:
+            raise Exception(f&quot;Failed to create context: {ctx_result.error_message}&quot;)
+
+        context = ctx_result.context
+        print(f&quot;Context ID: {context.id}&quot;)
+        print(f&quot;Context Name: {context.name}&quot;)
+
+        # ============================================
+        # Step 2: Create session with context mounted
+        # ============================================
+        print(&quot;\nCreating session with context mount...&quot;)
+
+        # Configure sync policy
+        sync_policy = SyncPolicy(
+            upload_policy=UploadPolicy(auto_upload=True),
+            download_policy=DownloadPolicy(auto_download=True),
+            recycle_policy=RecyclePolicy(lifecycle=Lifecycle.LIFECYCLE_30DAYS)
+        )
+
+        # Create context sync configuration
+        context_sync = ContextSync(
+            context_id=context.id,
+            path=&quot;/workspace&quot;,
+            policy=sync_policy
+        )
+
+        # Create session parameters
+        params = CreateSessionParams(
+            image_id=&quot;linux_latest&quot;,
+            context_syncs=[context_sync],
+            labels={&quot;project&quot;: &quot;demo&quot;, &quot;purpose&quot;: &quot;file-sync-example&quot;}
+        )
+
+        # Create the session
+        session_result = agent_bay.create(params)
+        if not session_result.success:
+            raise Exception(f&quot;Failed to create session: {session_result.error_message}&quot;)
+
+        session = session_result.session
+        print(f&quot;Session ID: {session.session_id}&quot;)
+
+        # ============================================
+        # Step 3: Upload files to the session
+        # ============================================
+        print(&quot;\nUploading files...&quot;)
+
+        # Create a local test file
+        local_file = &quot;/tmp/test_upload.txt&quot;
+        with open(local_file, &quot;w&quot;) as f:
+            f.write(&quot;Hello from local machine!\nThis file will be uploaded to the cloud.&quot;)
+
+        # Upload using pre-signed URL method
+        upload_result = session.filesystem.upload_file(
+            local_path=local_file,
+            remote_path=&quot;/workspace/uploaded_file.txt&quot;,
+            wait=True,
+            wait_timeout=60.0
+        )
+
+        if upload_result.success:
+            print(f&quot;Upload successful! Bytes sent: {upload_result.bytes_sent}&quot;)
+        else:
+            print(f&quot;Upload failed: {upload_result.error_message}&quot;)
+
+        # Alternative: Write content directly (for small files)
+        session.filesystem.write_file(
+            &quot;/workspace/direct_write.txt&quot;,
+            &quot;This content was written directly via MQTT.&quot;
+        )
+
+        # ============================================
+        # Step 4: Do work in the session
+        # ============================================
+        print(&quot;\nExecuting commands in session...&quot;)
+
+        # List files in workspace
+        cmd_result = session.command.execute_command(&quot;ls -la /workspace&quot;)
+        print(f&quot;Workspace contents:\n{cmd_result.output}&quot;)
+
+        # Create some output files
+        session.command.execute_command(
+            &quot;echo 'Processing complete at $(date)' &gt; /workspace/results.txt&quot;
+        )
+
+        # Read a file
+        content_result = session.filesystem.read_file(&quot;/workspace/results.txt&quot;)
+        print(f&quot;Results content: {content_result.content}&quot;)
+
+        # ============================================
+        # Step 5: Download results
+        # ============================================
+        print(&quot;\nDownloading results...&quot;)
+
+        local_download_path = &quot;/tmp/downloaded_results.txt&quot;
+        download_result = session.filesystem.download_file(
+            remote_path=&quot;/workspace/results.txt&quot;,
+            local_path=local_download_path,
+            wait=True,
+            wait_timeout=60.0
+        )
+
+        if download_result.success:
+            print(f&quot;Download successful! Bytes received: {download_result.bytes_received}&quot;)
+            with open(local_download_path, &quot;r&quot;) as f:
+                print(f&quot;Downloaded content: {f.read()}&quot;)
+        else:
+            print(f&quot;Download failed: {download_result.error_message}&quot;)
+
+        # ============================================
+        # Step 6: Check context sync status
+        # ============================================
+        print(&quot;\nChecking context sync status...&quot;)
+        info_result = session.context.info()
+        for status in info_result.context_status_data:
+            print(f&quot;  Context: {status.context_id}&quot;)
+            print(f&quot;  Path: {status.path}&quot;)
+            print(f&quot;  Status: {status.status}&quot;)
+            print(f&quot;  Task Type: {status.task_type}&quot;)
+
+        # ============================================
+        # Step 7: Cleanup
+        # ============================================
+        print(&quot;\nCleaning up...&quot;)
+
+        # Delete session with context sync (uploads any remaining changes)
+        delete_result = agent_bay.delete(session, sync_context=True)
+        if delete_result.success:
+            print(&quot;Session deleted successfully&quot;)
+        else:
+            print(f&quot;Session deletion failed: {delete_result.error_message}&quot;)
+
+        session = None  # Mark as deleted
+
+        # List files in context (they persist after session deletion)
+        print(&quot;\nFiles in context after session deletion:&quot;)
+        files_result = agent_bay.context.list_files(context.id, &quot;/&quot;)
+        for entry in files_result.entries:
+            print(f&quot;  {entry.file_name} ({entry.size} bytes)&quot;)
+
+        # Optionally delete the context
+        # agent_bay.context.delete(context)
+
+    except Exception as e:
+        print(f&quot;Error: {e}&quot;)
+
+    finally:
+        # Ensure session is cleaned up
+        if session is not None:
+            print(&quot;\nCleaning up session in finally block...&quot;)
+            agent_bay.delete(session)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre>
+<h3>Output Example</h3>
+<pre><code>Creating context...
+Context ID: ctx-04bdwfj7u22a1s30g
+Context Name: my-project-workspace
+
+Creating session with context mount...
+Session ID: sess-abc123xyz
+
+Uploading files...
+Upload successful! Bytes sent: 67
+
+Executing commands in session...
+Workspace contents:
+total 8
+drwxr-xr-x 2 root root 4096 Feb  4 10:30 .
+drwxr-xr-x 1 root root 4096 Feb  4 10:30 ..
+-rw-r--r-- 1 root root   67 Feb  4 10:30 uploaded_file.txt
+-rw-r--r-- 1 root root   45 Feb  4 10:30 direct_write.txt
+
+Results content: Processing complete at Tue Feb  4 10:30:45 UTC 2026
+
+Downloading results...
+Download successful! Bytes received: 47
+Downloaded content: Processing complete at Tue Feb  4 10:30:45 UTC 2026
+
+Checking context sync status...
+  Context: ctx-04bdwfj7u22a1s30g
+  Path: /workspace
+  Status: Success
+  Task Type: download
+
+Cleaning up...
+Session deleted successfully
+
+Files in context after session deletion:
+  uploaded_file.txt (67 bytes)
+  direct_write.txt (45 bytes)
+  results.txt (47 bytes)
+</code></pre>
+<hr />
+<h2>Quick Reference</h2>
+<h3>Key Classes</h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AgentBay</code></td>
+<td>Main client for API operations</td>
+</tr>
+<tr>
+<td><code>Session</code></td>
+<td>Represents a cloud container instance</td>
+</tr>
+<tr>
+<td><code>Context</code></td>
+<td>Persistent storage abstraction</td>
+</tr>
+<tr>
+<td><code>ContextSync</code></td>
+<td>Mount configuration for context</td>
+</tr>
+<tr>
+<td><code>SyncPolicy</code></td>
+<td>Upload/download behavior configuration</td>
+</tr>
+<tr>
+<td><code>FileSystem</code></td>
+<td>File operations within session</td>
+</tr>
+<tr>
+<td><code>Oss</code></td>
+<td>Direct OSS operations</td>
+</tr>
+</tbody>
+</table>
+<h3>Key Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>agent_bay.create(params)</code></td>
+<td>Create new session</td>
+</tr>
+<tr>
+<td><code>agent_bay.delete(session)</code></td>
+<td>Delete session</td>
+</tr>
+<tr>
+<td><code>agent_bay.context.get(name, create)</code></td>
+<td>Get or create context</td>
+</tr>
+<tr>
+<td><code>session.filesystem.upload_file()</code></td>
+<td>Upload local file to session</td>
+</tr>
+<tr>
+<td><code>session.filesystem.download_file()</code></td>
+<td>Download session file to local</td>
+</tr>
+<tr>
+<td><code>session.context.sync(mode)</code></td>
+<td>Trigger context synchronization</td>
+</tr>
+<tr>
+<td><code>session.beta_pause()</code></td>
+<td>Pause session (stop billing)</td>
+</tr>
+<tr>
+<td><code>session.beta_resume()</code></td>
+<td>Resume paused session</td>
+</tr>
+</tbody>
+</table>
+<h3>Environment Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AGENTBAY_API_KEY</code></td>
+<td>API key for authentication</td>
+</tr>
+<tr>
+<td><code>AGENTBAY_REGION_ID</code></td>
+<td>Region ID (optional)</td>
+</tr>
+<tr>
+<td><code>AGENTBAY_ENDPOINT</code></td>
+<td>Custom endpoint (optional)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>References</h2>
+<ul>
+<li><a href="https://help.aliyun.com/zh/agentbay/">Official Docs</a></li>
+<li><a href="https://help.aliyun.com/zh/agentbay/developer-reference/sdk-access-guide">SDK Guide</a></li>
+<li><a href="https://agentbay.console.aliyun.com/">Console</a></li>
+</ul>
+        </div>
+    </div>
+</body>
+</html>
