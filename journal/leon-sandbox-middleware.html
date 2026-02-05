@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leon Sandbox Middleware Architecture</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --accent-dim: #1f6feb;
+            --green: #3fb950;
+            --yellow: #d29922;
+            --red: #f85149;
+            --purple: #a371f7;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin: 2.5rem 0 1rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h2::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 1.5rem;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--accent);
+        }
+
+        p { margin-bottom: 1rem; }
+
+        code {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            background: var(--surface);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+        }
+
+        .diagram {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .component {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+        }
+
+        .component-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .component-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .icon-interface { background: var(--accent-dim); color: var(--accent); }
+        .icon-manager { background: #238636; color: var(--green); }
+        .icon-middleware { background: #6e40c9; color: var(--purple); }
+        .icon-provider { background: #9e6a03; color: var(--yellow); }
+
+        .component-title {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .component-path {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+
+        .component ul {
+            list-style: none;
+            margin-top: 0.5rem;
+        }
+
+        .component li {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.2rem 0;
+        }
+
+        .component li::before {
+            content: '-';
+            margin-right: 0.5rem;
+            color: var(--border);
+        }
+
+        .flow-box {
+            display: inline-block;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            margin: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .flow-box.highlight {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .status-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .status-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .status-box h4 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .status-box.works h4 { color: var(--green); }
+        .status-box.limits h4 { color: var(--yellow); }
+
+        .status-box ul {
+            list-style: none;
+        }
+
+        .status-box li {
+            font-size: 0.9rem;
+            padding: 0.3rem 0;
+            color: var(--text-muted);
+        }
+
+        .status-box.works li::before {
+            content: '+';
+            color: var(--green);
+            margin-right: 0.5rem;
+        }
+
+        .status-box.limits li::before {
+            content: '!';
+            color: var(--yellow);
+            margin-right: 0.5rem;
+        }
+
+        .cli-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .cli-table th, .cli-table td {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .cli-table th {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .cli-table td:first-child {
+            font-family: monospace;
+            color: var(--accent);
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 1rem; }
+            h1 { font-size: 1.8rem; }
+            .status-section { grid-template-columns: 1fr; }
+            .diagram { font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Leon Sandbox Middleware</h1>
+    <p class="subtitle">Isolated execution environments for AI agents. Provider-agnostic abstraction layer.</p>
+
+    <h2>Architecture Overview</h2>
+    <p>
+        The sandbox middleware provides a clean separation between Leon's agent runtime and the underlying
+        execution environment. This allows swapping providers (cloud containers, local Docker, etc.)
+        without changing agent code.
+    </p>
+
+    <div class="diagram">
++------------------+     +-------------------+     +------------------+
+|   Leon Agent     | --> | SandboxMiddleware | --> | SandboxManager   |
+|                  |     |                   |     |                  |
+| - Receives task  |     | - Creates tools   |     | - thread_id map  |
+| - Calls tools    |     | - Binds thread_id |     | - SQLite persist |
++------------------+     +-------------------+     +------------------+
+                                                           |
+                                                           v
+                         +-------------------+     +------------------+
+                         |  SandboxProvider  | <-- | Provider Factory |
+                         |   (Interface)     |     |                  |
+                         +-------------------+     +------------------+
+                                  ^
+                                  |
+          +-----------------------+-----------------------+
+          |                       |                       |
++-----------------+     +-----------------+     +-----------------+
+| AgentBayProvider|     | E2BProvider     |     | DockerProvider  |
+| (implemented)   |     | (future)        |     | (future)        |
++-----------------+     +-----------------+     +-----------------+</div>
+
+    <h2>Key Components</h2>
+    <div class="component-grid">
+        <div class="component">
+            <div class="component-header">
+                <div class="component-icon icon-interface">I</div>
+                <div>
+                    <div class="component-title">SandboxProvider</div>
+                    <div class="component-path">middleware/sandbox/provider.py</div>
+                </div>
+            </div>
+            <ul>
+                <li>Abstract interface defining provider contract</li>
+                <li>create_session, destroy_session</li>
+                <li>pause_session, resume_session</li>
+                <li>execute, read_file, write_file</li>
+                <li>list_dir, upload, download</li>
+                <li>get_metrics</li>
+            </ul>
+        </div>
+
+        <div class="component">
+            <div class="component-header">
+                <div class="component-icon icon-manager">M</div>
+                <div>
+                    <div class="component-title">SandboxManager</div>
+                    <div class="component-path">middleware/sandbox/manager.py</div>
+                </div>
+            </div>
+            <ul>
+                <li>Maps thread_id to session_id</li>
+                <li>SQLite persistence (sandbox_sessions)</li>
+                <li>Lazy session creation</li>
+                <li>Auto-resume paused sessions</li>
+                <li>Session lifecycle management</li>
+            </ul>
+        </div>
+
+        <div class="component">
+            <div class="component-header">
+                <div class="component-icon icon-middleware">W</div>
+                <div>
+                    <div class="component-title">SandboxMiddleware</div>
+                    <div class="component-path">middleware/sandbox/middleware.py</div>
+                </div>
+            </div>
+            <ul>
+                <li>Factory pattern for tool creation</li>
+                <li>ContextVar for thread_id binding</li>
+                <li>Tools: read_file, write_file, edit_file</li>
+                <li>Tools: list_dir, run_command</li>
+                <li>Tools: sandbox_upload, sandbox_download</li>
+            </ul>
+        </div>
+
+        <div class="component">
+            <div class="component-header">
+                <div class="component-icon icon-provider">A</div>
+                <div>
+                    <div class="component-title">AgentBayProvider</div>
+                    <div class="component-path">middleware/sandbox/providers/agentbay.py</div>
+                </div>
+            </div>
+            <ul>
+                <li>Alibaba Cloud AgentBay SDK</li>
+                <li>Cloud-based Ubuntu containers</li>
+                <li>Metrics and screenshot support</li>
+                <li>Web UI URL for debugging</li>
+                <li>Context persistence (optional)</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>Data Flow</h2>
+    <div class="diagram">
+User Request
+     |
+     v
++------------------+
+|   Leon Agent     |
++------------------+
+     |
+     v
++------------------+
+| SandboxMiddleware|  <-- Check thread_id (ContextVar)
++------------------+
+     |
+     v
++------------------+
+| SandboxManager   |  <-- get_or_create_session(thread_id)
++------------------+
+     |
+     +---> [Session exists?]
+     |            |
+     |     Yes    |    No
+     |      |     |     |
+     |      v     |     v
+     | [Paused?]  | Provider.create_session()
+     |    |       |     |
+     |    v       |     |
+     | Resume     |     |
+     |    |       |     |
+     +----+-------+-----+
+          |
+          v
++------------------+
+| Execute Tool     |  <-- read_file, run_command, etc.
++------------------+
+          |
+          v
++------------------+
+| Return Result    |
++------------------+</div>
+
+    <h2>Session Lifecycle</h2>
+    <div class="diagram">
+Thread Start
+     |
+     v (lazy - on first tool call)
++------------------+
+| Create Session   |
++------------------+
+     |
+     v
++------------------+
+| Session RUNNING  | <----+
++------------------+      |
+     |                    |
+     v                    |
+[Thread Switch / Exit]    |
+     |                    |
+     v                    |
++------------------+      |
+| Pause Session    |      |
+| (if supported)   |      |
++------------------+      |
+     |                    |
+     v                    |
+[Resume Thread] ----------+
+     |
+     v
+[Explicit Delete / TTL]
+     |
+     v
++------------------+
+| Destroy Session  |
++------------------+</div>
+
+    <h2>Configuration</h2>
+    <pre><code># In profile.yaml
+sandbox:
+  enabled: true
+  provider: agentbay
+  replace_local_tools: true  # Disable local fs/command tools
+  context_id: my-context     # Optional persistent storage
+
+  agentbay:
+    api_key: null  # Use AGENTBAY_API_KEY env var
+    context_path: /root</code></pre>
+
+    <h3>Key Options</h3>
+    <p>
+        <code>replace_local_tools: true</code> disables Leon's local FileSystemMiddleware and
+        CommandMiddleware, forcing all operations through the sandbox. This is the recommended
+        setting for untrusted workloads.
+    </p>
+    <p>
+        <code>context_id</code> enables persistent storage across sessions. Files written to
+        <code>context_path</code> survive session destruction.
+    </p>
+
+    <h2>CLI Commands</h2>
+    <table class="cli-table">
+        <thead>
+            <tr>
+                <th>Command</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>leonai</td>
+                <td>Main TUI - uses sandbox if enabled in profile</td>
+            </tr>
+            <tr>
+                <td>leonai sandbox</td>
+                <td>Session manager TUI (list, create, delete, pause, resume, metrics)</td>
+            </tr>
+            <tr>
+                <td>Ctrl+B</td>
+                <td>Sandbox inspector (in main TUI)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Implementation Status</h2>
+    <div class="status-section">
+        <div class="status-box works">
+            <h4>What Works</h4>
+            <ul>
+                <li>Provider abstraction with AgentBay implementation</li>
+                <li>Lazy session creation bound to thread_id</li>
+                <li>Standard tool names (read_file, run_command, etc.)</li>
+                <li>Session manager TUI</li>
+                <li>Sandbox-specific system prompt injection</li>
+                <li>Metrics and screenshot capture</li>
+            </ul>
+        </div>
+        <div class="status-box limits">
+            <h4>Known Limitations</h4>
+            <ul>
+                <li>Pause/Resume requires higher AgentBay tier</li>
+                <li>Context persistence not fully tested</li>
+                <li>No auto-pause on thread switch yet</li>
+                <li>E2B and Docker providers not implemented</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>Code Example</h2>
+    <h3>Adding a New Provider</h3>
+    <pre><code># middleware/sandbox/providers/my_provider.py
+from ..provider import SandboxProvider, SessionInfo
+
+class MyProvider(SandboxProvider):
+    async def create_session(self, thread_id: str) -> SessionInfo:
+        # Create container/VM/etc
+        session_id = await self._create_environment()
+        return SessionInfo(
+            session_id=session_id,
+            thread_id=thread_id,
+            status="running"
+        )
+
+    async def execute(self, session_id: str, command: str) -> str:
+        # Run command in sandbox
+        return await self._run_in_container(session_id, command)
+
+    async def read_file(self, session_id: str, path: str) -> str:
+        # Read file from sandbox filesystem
+        return await self._read_from_container(session_id, path)
+
+    # ... implement remaining interface methods</code></pre>
+
+    <h3>Using ContextVar for Thread Binding</h3>
+    <pre><code># The middleware uses ContextVar to track thread_id across async calls
+from contextvars import ContextVar
+
+thread_id_var: ContextVar[str] = ContextVar('thread_id')
+
+# Set when entering a thread context
+thread_id_var.set(current_thread_id)
+
+# Tools read it without explicit parameter
+def read_file(path: str) -> str:
+    thread_id = thread_id_var.get()
+    session = manager.get_or_create_session(thread_id)
+    return provider.read_file(session.session_id, path)</code></pre>
+
+    <footer style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.9rem;">
+        Leon AI Agent Runtime - Sandbox Middleware Documentation
+    </footer>
+</body>
+</html>
