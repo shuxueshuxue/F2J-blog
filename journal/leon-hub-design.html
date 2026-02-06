@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEON Hub: Multi-Agent Orchestration Design</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --accent-dim: #1f6feb;
+            --green: #3fb950;
+            --yellow: #d29922;
+            --red: #f85149;
+            --purple: #a371f7;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin: 2.5rem 0 1rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h2::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 1.5rem;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--accent);
+        }
+
+        p { margin-bottom: 1rem; }
+
+        code {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            background: var(--surface);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+        }
+
+        .diagram {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin: 0.5rem 0;
+            color: var(--text);
+        }
+
+        .principle-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .principle-list li {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.75rem 0;
+        }
+
+        .principle-list li strong {
+            color: var(--accent);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .pros { color: var(--green); }
+        .cons { color: var(--yellow); }
+
+        .file-tree {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.9rem;
+        }
+
+        .file-tree .new {
+            color: var(--green);
+        }
+
+        .file-tree .comment {
+            color: var(--text-muted);
+        }
+
+        .question-box {
+            background: var(--surface);
+            border-left: 3px solid var(--yellow);
+            border-radius: 0 8px 8px 0;
+            padding: 1rem;
+            margin: 0.75rem 0;
+        }
+
+        .question-box strong {
+            color: var(--yellow);
+        }
+
+        .size-estimate {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .size-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .size-box .label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .size-box .value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .size-box .detail {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 1rem; }
+            h1 { font-size: 1.8rem; }
+            .diagram { font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+    <h1>LEON Hub: Multi-Agent Orchestration Design</h1>
+    <p class="subtitle">From single-agent CLI to federated multi-agent teams. A design document.</p>
+
+    <h2>The Problem</h2>
+    <p>
+        LEON is currently a single-agent CLI tool. It works well for one human talking to one AI agent.
+        But real work often needs multiple agents collaborating - a researcher, a coder, a reviewer.
+    </p>
+    <p>What we want:</p>
+    <ul>
+        <li>A web UI for managing teams of LEON agents</li>
+        <li>Agents that can interact with each other</li>
+        <li>Any local LEON instance should be able to become a server</li>
+        <li>Servers on different machines should connect to each other</li>
+    </ul>
+    <p>
+        The challenge: how do we add this without turning a lightweight CLI into a bloated platform?
+    </p>
+
+    <h2>Design Principles</h2>
+    <ol class="principle-list">
+        <li><strong>Local-first.</strong> Single machine works fully offline. Network is optional enhancement.</li>
+        <li><strong>Any node can serve.</strong> No privileged "master" - any LEON instance can become a server.</li>
+        <li><strong>Explicit messaging.</strong> Agents send messages explicitly, no magic sync.</li>
+        <li><strong>Fail loudly.</strong> Network issues visible, not hidden behind fallbacks.</li>
+        <li><strong>Progressive complexity.</strong> Simple case stays simple, complexity opt-in.</li>
+    </ol>
+
+    <h2>Architecture: Federated Model</h2>
+    <p>
+        Instead of a central server that manages all agents, we use a federated model.
+        Each machine runs its own LEON server. Servers connect peer-to-peer.
+    </p>
+
+    <div class="diagram">Machine A                          Machine B
++---------------------+           +---------------------+
+| LEON Server         |           | LEON Server         |
+| +-----+ +-----+     |  HTTP/WS  | +-----+ +-----+     |
+| |Agent| |Agent|     |<--------->| |Agent| |Agent|     |
+| | A1  | | A2  |     |           | | B1  | | B2  |     |
+| +-----+ +-----+     |           | +-----+ +-----+     |
+|         |           |           |         |           |
+|    +----+----+      |           |    +----+----+      |
+|    | Local   |      |           |    | Local   |      |
+|    | MsgBus  |      |           |    | MsgBus  |      |
+|    +---------+      |           |    +---------+      |
++---------------------+           +---------------------+</div>
+
+    <h3>Key Properties</h3>
+    <ul>
+        <li>Each server manages its local agents</li>
+        <li>Servers connect peer-to-peer (no central registry)</li>
+        <li>Agent address: <code>local_name</code> or <code>server_url/agent_name</code></li>
+        <li>Messages to remote agents routed through server connection</li>
+    </ul>
+
+    <h2>Message Queue Options</h2>
+    <p>
+        Agents need to send messages to each other. What's the right abstraction?
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Approach</th>
+                <th class="pros">Pros</th>
+                <th class="cons">Cons</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>No queue</strong> (direct HTTP/WS)</td>
+                <td>Simple, no deps</td>
+                <td>Lost messages on failure</td>
+            </tr>
+            <tr>
+                <td><strong>In-process queue</strong> (asyncio.Queue)</td>
+                <td>Simple, no deps</td>
+                <td>Single machine only</td>
+            </tr>
+            <tr>
+                <td><strong>SQLite as queue</strong></td>
+                <td>Persistent, no extra deps</td>
+                <td>Polling, not real-time</td>
+            </tr>
+            <tr>
+                <td><strong>Redis</strong></td>
+                <td>Fast, pub/sub, proven</td>
+                <td>Extra dependency</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+        <strong>Decision:</strong> Start with SQLite-backed queue. We already have SQLite for checkpoints.
+        Abstract behind an interface so we can swap later.
+    </p>
+
+    <h2>Keeping It Light</h2>
+    <p>
+        Concern: Would full server mode be too heavy for a local client?
+    </p>
+    <p>
+        Solution: Single package, separate directory, optional dependencies. The hub code only loads
+        when you run <code>leonai serve</code>.
+    </p>
+
+    <div class="file-tree">
+leonai/
+|-- agent.py
+|-- middleware/
+|-- tui/                    <span class="comment"># CLI/TUI (current)</span>
+|
+|-- <span class="new">hub/</span>                    <span class="comment"># NEW - optional, lazy-loaded</span>
+    |-- <span class="new">server.py</span>           <span class="comment"># FastAPI app</span>
+    |-- <span class="new">coordinator.py</span>      <span class="comment"># Multi-agent</span>
+    |-- <span class="new">federation.py</span>       <span class="comment"># Peer connections</span>
+    |-- <span class="new">web/</span>                <span class="comment"># Static frontend</span>
+    </div>
+
+    <h3>Size Estimate</h3>
+    <div class="size-estimate">
+        <div class="size-box">
+            <div class="label">Current LEON</div>
+            <div class="value">~15k</div>
+            <div class="detail">lines, ~7.5MB</div>
+        </div>
+        <div class="size-box">
+            <div class="label">Hub Addition</div>
+            <div class="value">~1.5k</div>
+            <div class="detail">lines, ~2MB (mostly web assets)</div>
+        </div>
+        <div class="size-box">
+            <div class="label">Runtime Overhead</div>
+            <div class="value">zero</div>
+            <div class="detail">unless you run leonai serve</div>
+        </div>
+    </div>
+
+    <h2>Usage</h2>
+    <pre><code># Light CLI/TUI (unchanged)
+leonai
+
+# Start hub server with web UI
+leonai serve
+
+# Connect to peers on the network
+leonai serve --port 8000 --peers http://192.168.1.5:8000</code></pre>
+
+    <h2>Open Questions</h2>
+    <div class="question-box">
+        <strong>Server discovery:</strong> Manual config or auto-discovery (mDNS)?
+        <p style="margin-top: 0.5rem; margin-bottom: 0;">
+            Manual is simpler and more predictable. mDNS is convenient but can be flaky.
+            Probably start with manual, add mDNS later as opt-in.
+        </p>
+    </div>
+
+    <div class="question-box">
+        <strong>Authentication:</strong> Shared secret, certificates, or open (LAN only)?
+        <p style="margin-top: 0.5rem; margin-bottom: 0;">
+            For LAN use, open is fine. For internet, need at least shared secret.
+            Certificates are more secure but harder to set up.
+        </p>
+    </div>
+
+    <div class="question-box">
+        <strong>Conflict resolution:</strong> Two agents edit same file - who wins?
+        <p style="margin-top: 0.5rem; margin-bottom: 0;">
+            Last-write-wins is simple but can lose work. Could use file locking,
+            but that adds complexity. Maybe just fail loudly and let humans resolve.
+        </p>
+    </div>
+
+    <h2>Next Steps</h2>
+    <ol>
+        <li>Implement SQLite message queue with abstract interface</li>
+        <li>Build minimal FastAPI server with WebSocket support</li>
+        <li>Create coordinator for local multi-agent orchestration</li>
+        <li>Add federation layer for peer-to-peer connections</li>
+        <li>Build web UI (probably React or vanilla JS)</li>
+    </ol>
+
+    <p>
+        The goal is to keep LEON's core simple while enabling powerful multi-agent workflows
+        for those who need them. Complexity should be opt-in, not mandatory.
+    </p>
+
+    <footer style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.9rem;">
+        LEON AI Agent Runtime - Hub Design Document - February 2026
+    </footer>
+</body>
+</html>
