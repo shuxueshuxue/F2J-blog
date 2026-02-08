@@ -160,6 +160,18 @@
             margin: 0.75rem 0;
         }
 
+        blockquote {
+            background: var(--surface);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        blockquote p {
+            margin-bottom: 0;
+        }
+
         @media (max-width: 600px) {
             body { padding: 1rem; }
             h1 { font-size: 1.8rem; }
@@ -182,6 +194,10 @@
     <p>When building AI agent runtimes that execute code in cloud sandboxes, one fundamental problem emerges: <strong>how do you persist workspace files across sandbox lifecycle events?</strong></p>
 
     <p>Sandboxes are ephemeral by design. They spin up, run code, and die. But AI agents need continuity -- the files from yesterday's conversation should be there when the user comes back today. This post documents our investigation into four different persistence strategies for the <a href="https://github.com/OpenDCAI/leonai">LEON</a> agent runtime.</p>
+
+    <blockquote>
+        <p><strong>Background</strong>: Two of the four approaches below use <a href="fuse-for-sandbox-persistence.html">FUSE</a> (Filesystem in Userspace) to mount remote storage as a local directory inside the sandbox. If you're unfamiliar with FUSE, read <a href="fuse-for-sandbox-persistence.html">that companion post</a> first.</p>
+    </blockquote>
 
     <h2>The Problem</h2>
 
