@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sandbox Workspace Persistence: A Comparative Analysis</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --accent-dim: #1f6feb;
+            --green: #3fb950;
+            --yellow: #d29922;
+            --red: #f85149;
+            --purple: #a371f7;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+        }
+
+        .tags { margin-bottom: 0.5rem; }
+        .tags span {
+            display: inline-block;
+            background: var(--accent-dim);
+            color: var(--accent);
+            font-size: 0.75rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            margin-right: 0.4rem;
+        }
+        h2 {
+            font-size: 1.5rem;
+            margin: 2.5rem 0 1rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h2::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 1.5rem;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--accent);
+        }
+
+        p { margin-bottom: 1rem; }
+
+        strong { color: #fff; }
+
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        code {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            background: var(--surface);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+        }
+
+        .diagram {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        li { margin: 0.5rem 0; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .pros { color: var(--green); }
+        .cons { color: var(--yellow); }
+
+        .verdict-box {
+            background: var(--surface);
+            border-left: 3px solid var(--green);
+            border-radius: 0 8px 8px 0;
+            padding: 1rem;
+            margin: 0.75rem 0;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 1rem; }
+            h1 { font-size: 1.8rem; }
+            .diagram { font-size: 0.75rem; }
+            table { font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="tags">
+        <span>sandbox</span>
+        <span>persistence</span>
+        <span>e2b</span>
+        <span>daytona</span>
+        <span>gcs</span>
+    </div>
+    <h1>Sandbox Workspace Persistence: A Comparative Analysis</h1>
+    <p class="subtitle">February 8, 2026</p>
+
+    <p>When building AI agent runtimes that execute code in cloud sandboxes, one fundamental problem emerges: <strong>how do you persist workspace files across sandbox lifecycle events?</strong></p>
+
+    <p>Sandboxes are ephemeral by design. They spin up, run code, and die. But AI agents need continuity -- the files from yesterday's conversation should be there when the user comes back today. This post documents our investigation into four different persistence strategies for the <a href="https://github.com/OpenDCAI/leonai">LEON</a> agent runtime.</p>
+
+    <h2>The Problem</h2>
+
+    <p>LEON supports multiple sandbox providers: E2B (microVMs), Daytona (Docker containers), AgentBay (Alibaba Cloud), and local Docker. Each has different persistence characteristics:</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Provider</th>
+                <th>Native Volumes</th>
+                <th>Survives Stop/Start</th>
+                <th>Survives Destroy</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>E2B</td><td>None</td><td>Full VM state (pause/resume)</td><td>Nothing</td></tr>
+            <tr><td>Daytona</td><td>Yes (FUSE/S3)</td><td>Disk state</td><td>Nothing (unless volumes)</td></tr>
+            <tr><td>AgentBay</td><td>Yes (OSS context)</td><td>Built-in</td><td>Built-in</td></tr>
+            <tr><td>Docker</td><td>Yes (bind mounts)</td><td>Built-in</td><td>Built-in</td></tr>
+        </tbody>
+    </table>
+
+    <p>E2B is the problem child. It has no native persistent storage. The previous workaround was downloading every file from the workspace into SQLite BLOBs on destroy, then re-uploading on recreate. This works for tiny workspaces but doesn't scale.</p>
+    <h2>Four Approaches Tested</h2>
+
+    <h3>1. E2B + SQLite (Baseline)</h3>
+    <p>The original approach. On destroy, walk the workspace directory tree, download each file via the E2B SDK, store as BLOBs in a local SQLite database. On recreate, upload them all back.</p>
+    <p><span class="pros"><strong>Pros:</strong></span> No external dependencies. Works offline.<br>
+    <span class="cons"><strong>Cons:</strong></span> O(n) API calls per file. Practical limit ~50MB. Binary files are painful.</p>
+
+    <h3>2. E2B + GCS Tar Sync</h3>
+    <p>Tar the entire workspace inside the sandbox, base64-encode it (because the E2B file API is text-only), download to the host, upload to Google Cloud Storage. Reverse on restore.</p>
+    <div class="diagram">Save:    sandbox$ tar czf -> base64 -> host reads text -> decode -> GCS upload
+Restore: GCS download -> host -> sandbox$ base64 -d -> tar xzf</div>
+    <p><span class="pros"><strong>Pros:</strong></span> Single archive instead of per-file transfers. Scales to hundreds of MB. Cloud-backed durability.<br>
+    <span class="cons"><strong>Cons:</strong></span> Full workspace re-upload on every save. Base64 overhead (33% size increase in transit).</p>
+
+    <h3>3. E2B + GCSFuse</h3>
+    <p>Mount a Google Cloud Storage bucket directly inside the sandbox via <a href="https://github.com/GoogleCloudPlatform/gcsfuse">gcsfuse</a>. Writes go straight to GCS in real-time. Per-thread isolation via <code>--only-dir</code>.</p>
+    <div class="diagram">Restore: inject credentials -> install gcsfuse (if needed) -> mount bucket
+Save:    no-op (already in GCS)</div>
+    <p><span class="pros"><strong>Pros:</strong></span> Zero save time. Real-time persistence. No data loss on crash.<br>
+    <span class="cons"><strong>Cons:</strong></span> ~13s cold start (gcsfuse install). Metadata operations have FUSE latency. Requires <code>sudo</code> in sandbox.</p>
+
+    <h3>4. Daytona + Native Volumes</h3>
+    <p>Daytona has first-class FUSE volumes backed by S3. Create a named volume, attach it at sandbox creation time. The volume persists independently of the sandbox lifecycle.</p>
+    <pre><code>volume = daytona.volume.get("leon-{thread_id}", create=True)
+params = CreateSandboxFromSnapshotParams(
+    volumes=[VolumeMount(volume_id=volume.id, mount_path="/workspace")]
+)</code></pre>
+    <p><span class="pros"><strong>Pros:</strong></span> Zero application-level code. Volumes survive sandbox deletion. Shared across sandboxes.<br>
+    <span class="cons"><strong>Cons:</strong></span> Known bugs (broken <code>mv</code>/<code>touch</code> -- <a href="https://github.com/daytonaio/daytona/issues/3331">#3331</a>). Volume creation race condition (<a href="https://github.com/daytonaio/daytona/issues/2770">#2770</a>).</p>
+    <h2>E2E Test Results</h2>
+    <p>Each approach was tested with the same flow: create sandbox, write 3 test files, pause, resume, verify files, destroy, recreate, verify files.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Approach</th>
+                <th>Save Time</th>
+                <th>Restore Time</th>
+                <th>Resume Verify</th>
+                <th>Recreate Verify</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>E2B + SQLite</strong></td><td>2.77s</td><td>4.00s</td><td>PASS</td><td>PASS</td></tr>
+            <tr><td><strong>E2B + GCSTarSync</strong></td><td>1.06s</td><td>2.44s</td><td>PASS</td><td>PASS</td></tr>
+            <tr><td><strong>E2B + GCSFuse</strong></td><td>0.00s</td><td>12.93s*</td><td>PASS</td><td>PASS</td></tr>
+            <tr><td><strong>Daytona + Volumes</strong></td><td>N/A</td><td>N/A</td><td>PASS</td><td>PASS</td></tr>
+        </tbody>
+    </table>
+    <p style="color: var(--text-muted); font-size: 0.9rem;">*GCSFuse restore includes ~12s for runtime gcsfuse installation. With a custom template (gcsfuse pre-installed), this drops to ~2s.</p>
+
+    <h3>Key Observations</h3>
+    <p><strong>GCSTarSync is the sweet spot for E2B.</strong> It's 2.6x faster than SQLite on save, 1.6x faster on restore, and scales to large workspaces. The base64 encoding overhead is negligible for typical AI agent workspaces.</p>
+    <p><strong>GCSFuse has zero save cost</strong> but pays on restore. The cold start penalty is brutal without a custom template. Once mounted, writes are transparent -- no sync logic needed. Best for long-running sessions where the agent writes frequently.</p>
+    <p><strong>Daytona volumes just work</strong> -- no application code needed. The volume API has rough edges (race conditions, FUSE bugs) but the architecture is right. Zero overhead at the LEON layer.</p>
+    <p><strong>SQLite should be deprecated</strong> for anything beyond toy workspaces. It's the slowest approach and doesn't scale.</p>
+    <h2>Architecture</h2>
+    <p>The implementation introduces a <code>WorkspaceStorage</code> interface that plugs into the sandbox lifecycle:</p>
+    <div class="diagram">RemoteSandbox
+|-- on_session_ready -> run init commands -> storage.restore()
+|-- on_before_pause  -> storage.save()
+|-- on_before_destroy -> storage.save()
+|
+|-- WorkspaceStorage (ABC)
+|   |-- SQLiteStorage      -- files in SQLite BLOBs
+|   |-- GCSTarSyncStorage  -- tar -> GCS bucket
+|   +-- GCSFuseStorage     -- gcsfuse mount
+|
++-- DaytonaProvider
+    +-- Native volumes (no WorkspaceStorage needed)</div>
+
+    <p>Configuration is in <code>~/.leon/sandboxes/e2b.json</code>:</p>
+    <pre><code>{
+  "provider": "e2b",
+  "e2b": {
+    "storage": "gcs_sync"
+  },
+  "gcs": {
+    "key_file": "~/.leon/gcs-key.json",
+    "bucket": "leon-sandbox-workspaces"
+  }
+}</code></pre>
+
+    <h2>Verdict</h2>
+    <div class="verdict-box">
+        <p><strong>For E2B:</strong> Use <code>gcs_sync</code> (tar sync) as the default. Best balance of speed, reliability, and simplicity. Use <code>gcs_fuse</code> only if you need real-time persistence and can tolerate the cold start.</p>
+        <p><strong>For Daytona:</strong> Use native volumes. No contest.</p>
+        <p style="margin-bottom: 0;"><strong>For production:</strong> The real answer is that E2B should add native volumes (there's a <a href="https://github.com/e2b-dev/E2B/pull/1111">snapshot PR</a> in progress). Until then, GCS tar sync bridges the gap.</p>
+    </div>
+
+    <h2>Cost</h2>
+    <table>
+        <thead>
+            <tr><th>Resource</th><th>Monthly Cost</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>GCS Standard storage</td><td>$0.020/GB</td></tr>
+            <tr><td>GCS Class A ops (writes)</td><td>$0.005/1K</td></tr>
+            <tr><td>GCS Class B ops (reads)</td><td>$0.0004/1K</td></tr>
+            <tr><td>Free tier</td><td>5GB + 5K writes + 50K reads</td></tr>
+        </tbody>
+    </table>
+    <p>For a typical AI agent workspace (&lt; 100MB, ~10 sessions/day), the GCS cost is effectively zero -- well within the free tier.</p>
+
+    <footer style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.9rem;">
+        LEON AI Agent Runtime - Workspace Storage Comparison - February 2026
+    </footer>
+</body>
+</html>
