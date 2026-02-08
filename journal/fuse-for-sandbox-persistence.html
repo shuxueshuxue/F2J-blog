@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FUSE Explained: How AI Sandboxes Get Persistent Filesystems</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --accent-dim: #1f6feb;
+            --green: #3fb950;
+            --yellow: #d29922;
+            --red: #f85149;
+            --purple: #a371f7;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+        }
+
+        .tags { margin-bottom: 0.5rem; }
+        .tags span {
+            display: inline-block;
+            background: var(--accent-dim);
+            color: var(--accent);
+            font-size: 0.75rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            margin-right: 0.4rem;
+        }
+        h2 {
+            font-size: 1.5rem;
+            margin: 2.5rem 0 1rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h2::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 1.5rem;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--accent);
+        }
+
+        p { margin-bottom: 1rem; }
+
+        strong { color: #fff; }
+
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        code {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            background: var(--surface);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+        }
+
+        .diagram {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        li { margin: 0.5rem 0; }
+
+        .verdict-box {
+            background: var(--surface);
+            border-left: 3px solid var(--green);
+            border-radius: 0 8px 8px 0;
+            padding: 1rem;
+            margin: 0.75rem 0;
+        }
+
+        .callout-box {
+            background: var(--surface);
+            border-left: 3px solid var(--yellow);
+            border-radius: 0 8px 8px 0;
+            padding: 1rem;
+            margin: 0.75rem 0;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 1rem; }
+            h1 { font-size: 1.8rem; }
+            .diagram { font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="tags">
+        <span>fuse</span>
+        <span>sandbox</span>
+        <span>gcsfuse</span>
+        <span>persistence</span>
+        <span>daytona</span>
+    </div>
+    <h1>FUSE Explained: How AI Sandboxes Get Persistent Filesystems</h1>
+    <p class="subtitle">February 8, 2026 &mdash; A companion to <a href="workspace-storage-comparison.html">Sandbox Workspace Persistence: A Comparative Analysis</a></p>
+
+    <p>AI agents write files the way any program does: <code>open()</code>, <code>write()</code>, <code>close()</code>. They don't call storage APIs. They don't know they're inside an ephemeral sandbox. So when you need their workspace to survive a sandbox restart, you have two options: copy files in and out at lifecycle boundaries, or make remote storage <em>look like</em> a local filesystem.</p>
+
+    <p>FUSE is how you do the second one.</p>
+
+    <h2>What is FUSE?</h2>
+
+    <p><strong>FUSE</strong> (Filesystem in Userspace) is a Linux kernel module that lets you implement a filesystem as a regular program instead of a kernel driver. It has three parts:</p>
+
+    <ol>
+        <li><strong>The FUSE kernel module</strong> (<code>fuse.ko</code>) -- loaded into the kernel, registers itself with the VFS (Virtual Filesystem Switch). The VFS is the abstraction layer that routes all filesystem calls (<code>open</code>, <code>read</code>, <code>write</code>, <code>stat</code>, etc.) to the right filesystem driver -- ext4, NFS, or in our case, FUSE.</li>
+        <li><strong>The libfuse library</strong> -- a userspace library that handles the protocol between the kernel module and your daemon.</li>
+        <li><strong>Your userspace daemon</strong> -- the actual program that decides what happens when someone reads or writes a file. For gcsfuse, this daemon translates filesystem operations into GCS API calls.</li>
+    </ol>
+
+    <p>Here's the request flow when an agent writes a file to a FUSE-mounted directory:</p>
+
+    <div class="diagram">Agent: open("/workspace/result.py", "w")
+  |
+  v
+Kernel VFS: "this path is on a FUSE mount"
+  |
+  v
+FUSE kernel module: serialize request, write to /dev/fuse
+  |
+  v
+Userspace daemon (gcsfuse): read from /dev/fuse
+  |  - translate to GCS API call
+  |  - PUT object to gs://bucket/thread-id/result.py
+  |  - write response back to /dev/fuse
+  v
+FUSE kernel module: deserialize response
+  |
+  v
+Kernel VFS: return success to agent
+  |
+  v
+Agent: file written (doesn't know it went to GCS)</div>
+
+    <p>The key insight: <strong>every file operation crosses the kernel-userspace boundary twice</strong>. Once going down (app to kernel to daemon), once coming back up (daemon to kernel to app). This is the fundamental cost of FUSE -- and the reason it exists. Writing a kernel filesystem driver is hard, dangerous, and requires kernel rebuilds. FUSE lets you write one in Python if you want.</p>
+
+    <h2>Why FUSE for Sandboxes?</h2>
+
+    <p>The alternative is what we call "tar sync" -- archive the workspace on save, re-extract on restore. It works. We benchmarked it at 1.06s save / 2.44s restore for a small workspace. But it has a structural problem: <strong>if the sandbox crashes between saves, you lose everything since the last checkpoint.</strong></p>
+
+    <p>With FUSE, every write goes to durable storage immediately. There is no save step. When the sandbox dies, the files are already in GCS. When a new sandbox starts, you mount the same bucket prefix and the files are there.</p>
+
+    <p>The reason you can't just use the GCS SDK directly is that agents don't know about GCS. An agent runs <code>python script.py</code>, which calls <code>open("output.csv", "w")</code>. That's a syscall. It hits the kernel. FUSE intercepts it and routes it to cloud storage. The agent, the script, and Python itself are all unaware.</p>
+
+    <h2>gcsfuse in Practice</h2>
+
+    <p>In LEON's <code>GCSFuseStorage</code>, the <code>restore()</code> method mounts a GCS bucket inside the sandbox. Here's the actual mount command from our implementation:</p>
+
+    <pre><code>sudo gcsfuse --key-file /home/user/.gcs-key.json \
+    --implicit-dirs \
+    --only-dir {thread_id} \
+    -o allow_other \
+    --file-mode=0666 --dir-mode=0777 \
+    leon-sandbox-workspaces /home/user/workspace</code></pre>
+
+    <p>Each flag solves a specific problem:</p>
+
+    <ul>
+        <li><code>--implicit-dirs</code> -- GCS is a flat key-value store, not a real filesystem. There are no directories, just keys with <code>/</code> in them. This flag makes gcsfuse synthesize directory entries from object key prefixes, so <code>ls</code> and <code>os.listdir()</code> work as expected.</li>
+        <li><code>--only-dir {thread_id}</code> -- Per-thread isolation. Each agent conversation gets its own prefix in the bucket. Thread <code>abc123</code> sees only objects under <code>gs://leon-sandbox-workspaces/abc123/</code>. One bucket, many workspaces.</li>
+        <li><code>--file-mode=0666 --dir-mode=0777</code> -- gcsfuse runs as root (needs <code>sudo</code> for the mount syscall), but the sandbox agent runs as <code>user</code>. Without these flags, the mounted files are owned by root and the agent can't write to them.</li>
+        <li><code>-o allow_other</code> -- Same ownership problem, different angle. By default, only the user who mounted the filesystem can access it. This flag lets other users (the sandbox's <code>user</code> account) read and write.</li>
+    </ul>
+
+    <p>And the <code>save()</code> method? It's literally a no-op:</p>
+
+    <pre><code>def save(self, provider, session_id, thread_id):
+    """No-op -- FUSE writes go directly to GCS."""
+    pass</code></pre>
+
+    <h2>Daytona's Approach: Platform-Managed FUSE</h2>
+
+    <p>Daytona uses the same underlying technology -- FUSE backed by S3 -- but manages it at the platform level. You don't install gcsfuse, inject credentials, or run mount commands. You declare a volume:</p>
+
+    <pre><code>params = CreateSandboxFromSnapshotParams(
+    volumes=[VolumeMount(volume_id=volume.id, mount_path="/workspace")]
+)</code></pre>
+
+    <p>Daytona handles the daemon lifecycle, the S3 credentials, and the mount. From LEON's perspective, there is no <code>WorkspaceStorage</code> implementation needed at all -- the volume persists independently of the sandbox.</p>
+
+    <p>The tradeoff is control. When Daytona's FUSE layer has bugs -- and it does (<code>mv</code> and <code>touch</code> are broken as of February 2026, see <a href="https://github.com/daytonaio/daytona/issues/3331">#3331</a>) -- you can't fix them. With gcsfuse, you pick the version, set the flags, and debug the daemon yourself.</p>
+
+    <h2>The Tradeoffs</h2>
+
+    <p>FUSE is not free. Every file operation pays a tax:</p>
+
+    <div class="callout-box">
+        <p><strong>Latency:</strong> Each syscall crosses the kernel-userspace boundary twice, then makes a network round-trip to the storage backend. A local <code>stat()</code> takes microseconds. A FUSE <code>stat()</code> over GCS takes milliseconds.</p>
+        <p><strong>Metadata is expensive:</strong> Operations like <code>ls -la</code> on a directory with 100 files means 100+ <code>stat()</code> calls, each hitting GCS. Tools like <code>find</code> or <code>git status</code> that walk directory trees will be noticeably slower.</p>
+        <p style="margin-bottom: 0;"><strong>Not for databases:</strong> SQLite, Postgres, or anything that does random seeks and fsync will perform badly. FUSE filesystems are not POSIX-complete -- some operations (hard links, extended attributes) may not be supported.</p>
+    </div>
+
+    <p>But for AI agent workspaces -- Python scripts, Jupyter notebooks, CSV outputs, small data files -- the latency is acceptable. Our benchmarks show 3.83s cold restore with a pre-built template (vs 12.93s with runtime gcsfuse installation). After that, individual file operations add single-digit milliseconds of overhead.</p>
+
+    <h2>In Our Architecture</h2>
+
+    <p>LEON's sandbox system has a <code>WorkspaceStorage</code> interface with three implementations. Two of them (SQLite, tar sync) copy files at lifecycle boundaries. The third (gcsfuse) mounts storage directly:</p>
+
+    <div class="diagram">WorkspaceStorage
+|
+|-- SQLiteStorage     save: download each file -> SQLite BLOB
+|                     restore: upload each file from SQLite
+|
+|-- GCSTarSyncStorage save: tar -> base64 -> GCS upload
+|                     restore: GCS download -> untar
+|
++-- GCSFuseStorage    save: pass
+                      restore: mount gcsfuse -> done</div>
+
+    <p>The FUSE approach inverts the persistence model. Instead of "save state before shutdown," it's "state is always saved." The <code>restore()</code> method doesn't transfer data -- it sets up a mount point so the data is accessible. The <code>save()</code> method does nothing because there's nothing to do.</p>
+
+    <div class="verdict-box">
+        <p><strong>When to use FUSE:</strong> Long-running agent sessions where crash resilience matters and you can tolerate slightly slower file I/O. Use the <a href="workspace-storage-comparison.html">tar sync approach</a> when you want simpler infrastructure and faster cold starts.</p>
+        <p style="margin-bottom: 0;"><strong>The custom template matters:</strong> Our E2B template (<code>leon-gcsfuse:v1.0</code>) pre-installs gcsfuse in the sandbox image. Without it, every cold start pays a ~12s installation penalty. With it, cold restore drops to ~4s -- competitive with tar sync's 2.4s restore.</p>
+    </div>
+
+    <footer style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.9rem;">
+        LEON AI Agent Runtime - FUSE for Sandbox Persistence - February 2026
+    </footer>
+</body>
+</html>
