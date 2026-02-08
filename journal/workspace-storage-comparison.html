@@ -251,14 +251,15 @@ params = CreateSandboxFromSnapshotParams(
             <tr><td><strong>E2B + SQLite</strong></td><td>2.77s</td><td>4.00s</td><td>PASS</td><td>PASS</td></tr>
             <tr><td><strong>E2B + GCSTarSync</strong></td><td>1.06s</td><td>2.44s</td><td>PASS</td><td>PASS</td></tr>
             <tr><td><strong>E2B + GCSFuse</strong></td><td>0.00s</td><td>12.93s*</td><td>PASS</td><td>PASS</td></tr>
+            <tr><td><strong>E2B + GCSFuse (custom template)</strong></td><td>0.00s</td><td>3.83s</td><td>PASS</td><td>PASS</td></tr>
             <tr><td><strong>Daytona + Volumes</strong></td><td>N/A</td><td>N/A</td><td>PASS</td><td>PASS</td></tr>
         </tbody>
     </table>
-    <p style="color: var(--text-muted); font-size: 0.9rem;">*GCSFuse restore includes ~12s for runtime gcsfuse installation. With a custom template (gcsfuse pre-installed), this drops to ~2s.</p>
+    <p style="color: var(--text-muted); font-size: 0.9rem;">*GCSFuse without custom template includes ~12s for runtime gcsfuse installation. The custom template (<code>leon-gcsfuse:v1.0</code>, built via E2B v2 SDK) has gcsfuse pre-installed, reducing cold restore from 12.93s to 3.83s.</p>
 
     <h3>Key Observations</h3>
     <p><strong>GCSTarSync is the sweet spot for E2B.</strong> It's 2.6x faster than SQLite on save, 1.6x faster on restore, and scales to large workspaces. The base64 encoding overhead is negligible for typical AI agent workspaces.</p>
-    <p><strong>GCSFuse has zero save cost</strong> but pays on restore. The cold start penalty is brutal without a custom template. Once mounted, writes are transparent -- no sync logic needed. Best for long-running sessions where the agent writes frequently.</p>
+    <p><strong>GCSFuse has zero save cost</strong> but pays on restore. With the custom template (<code>leon-gcsfuse:v1.0</code>), cold restore drops from ~13s to ~4s. After resume, re-mount takes ~2s. Best for long-running sessions where the agent writes frequently and real-time persistence matters.</p>
     <p><strong>Daytona volumes just work</strong> -- no application code needed. The volume API has rough edges (race conditions, FUSE bugs) but the architecture is right. Zero overhead at the LEON layer.</p>
     <p><strong>SQLite should be deprecated</strong> for anything beyond toy workspaces. It's the slowest approach and doesn't scale.</p>
     <h2>Architecture</h2>
@@ -290,7 +291,7 @@ params = CreateSandboxFromSnapshotParams(
 
     <h2>Verdict</h2>
     <div class="verdict-box">
-        <p><strong>For E2B:</strong> Use <code>gcs_sync</code> (tar sync) as the default. Best balance of speed, reliability, and simplicity. Use <code>gcs_fuse</code> only if you need real-time persistence and can tolerate the cold start.</p>
+        <p><strong>For E2B:</strong> Use <code>gcs_sync</code> (tar sync) as the default. Best balance of speed, reliability, and simplicity. Use <code>gcs_fuse</code> with the custom template (<code>leon-gcsfuse:v1.0</code>, template ID <code>1j83rb3e4mbglsc99wgb</code>) if you need real-time persistence -- cold restore is ~4s with the template vs ~13s without.</p>
         <p><strong>For Daytona:</strong> Use native volumes. No contest.</p>
         <p style="margin-bottom: 0;"><strong>For production:</strong> The real answer is that E2B should add native volumes (there's a <a href="https://github.com/e2b-dev/E2B/pull/1111">snapshot PR</a> in progress). Until then, GCS tar sync bridges the gap.</p>
     </div>
