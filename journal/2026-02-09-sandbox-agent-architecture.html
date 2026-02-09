@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Sandbox/Agent Architecture & Experiments - F@J</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+    <link rel="stylesheet" href="/assets/style.css">
+    <script>
+      window.MathJax = {
+        tex: {inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$']]},
+        options: {skipHtmlTags: ['script','noscript','style','textarea','pre','code']}
+      };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+    <div class="page">
+        <a href="/" class="back-link">← 返回首页</a>
+        <div class="card">
+            <h1>Comprehensive Sandbox/Agent Architecture & Experiments</h1>
+            <p style="color: var(--text-muted); margin-top: 4px;">2026-02-09-sandbox-agent-architecture</p>
+            <h1>Comprehensive Architecture &amp; Implementation</h1>
+<h2>0. Scope</h2>
+<p>This document integrates the current architecture and implementation of:</p>
+<ul>
+<li>terminal persistence and lifecycle envelope</li>
+<li>sandbox lease and instance management</li>
+<li>agent identity and task threads</li>
+<li>storage binding across providers</li>
+<li>cross-agent collaboration contract</li>
+<li>frontend orchestration and control surfaces</li>
+</ul>
+<p>Reference baseline:<br />
+- <code>teams/plan/2026-02-08_terminal-persistence-today.md</code><br />
+- branch lineage ending at <code>exp/cross-agent-collab-contract</code></p>
+<hr />
+<h2>1. Architecture Essence</h2>
+<p>The system is organized by <strong>durability boundary</strong> and <strong>ownership boundary</strong>.</p>
+<h3>1.1 Durability</h3>
+<ul>
+<li>Durable:</li>
+<li>Agent</li>
+<li>Thread</li>
+<li>AbstractTerminal state (<code>cwd</code>, <code>env_delta</code>)</li>
+<li>ChatSession records</li>
+<li>SandboxLease identity</li>
+<li>StorageBinding</li>
+<li>Collaboration channel/member/message</li>
+<li>Ephemeral:</li>
+<li>Physical terminal runtime process</li>
+<li>Sandbox instance (provider VM/container/sandbox process)</li>
+</ul>
+<h3>1.2 Ownership</h3>
+<ul>
+<li>Agent owns default policy (sandbox type, default workspace key, memory root)</li>
+<li>Thread owns task timeline and terminal identity</li>
+<li>ChatSession owns runtime lifecycle window</li>
+<li>Lease owns compute handle and provider instance convergence</li>
+</ul>
+<p>Core theorem:<br />
+<strong>Policy envelope (ChatSession) must contain runtime lifecycle; durable identity must outlive compute.</strong></p>
+<hr />
+<h2>2. Canonical Data Model</h2>
+<h2>2.1 Runtime Core</h2>
+<ul>
+<li><code>abstract_terminals</code></li>
+<li>terminal identity per thread</li>
+<li>persisted state snapshot (<code>cwd</code>, <code>env_delta_json</code>, <code>state_version</code>)</li>
+<li><code>chat_sessions</code></li>
+<li>lifecycle/policy window</li>
+<li>status: <code>active|idle|paused|closed</code></li>
+<li>idle TTL and max duration policy</li>
+<li><code>sandbox_leases</code></li>
+<li>durable compute handle</li>
+<li><code>workspace_key</code> continuity anchor</li>
+<li>pointer to current instance</li>
+<li><code>sandbox_instances</code></li>
+<li>ephemeral provider instance records and status</li>
+</ul>
+<h2>2.2 Product Layer</h2>
+<ul>
+<li><code>workspace_storages</code></li>
+<li>owner-scoped binding to context/mount/bucket/workspace_key</li>
+<li><code>agents</code></li>
+<li>durable agent identity and defaults</li>
+<li><code>agent_threads</code></li>
+<li>mapping agent -&gt; many task threads</li>
+<li><code>collab_channels</code></li>
+<li><code>collab_channel_members</code></li>
+<li><code>collab_channel_messages</code></li>
+</ul>
+<hr />
+<h2>3. Runtime Execution Path</h2>
+<h2>3.1 Orchestration Graph</h2>
+<pre><code class="language-text">Thread
+  -&gt; ChatSession (policy)
+      -&gt; PhysicalTerminalRuntime (ephemeral)
+          -&gt; AbstractTerminal (state snapshot)
+          -&gt; SandboxLease (compute handle)
+              -&gt; SandboxInstance (provider resource)
+</code></pre>
+<h2>3.2 Command Execution</h2>
+<ol>
+<li>Resolve thread -&gt; session via <code>SandboxManager.get_sandbox(thread_id)</code></li>
+<li>Runtime executes command</li>
+<li>Runtime updates terminal snapshot (<code>cwd</code>, <code>env_delta</code>)</li>
+<li>Lease converges provider instance status when needed</li>
+</ol>
+<h2>3.3 Provider Strategies</h2>
+<ul>
+<li>Local: persistent shell process per session window</li>
+<li>Remote: wrapped command execution + state hydration/persist markers</li>
+</ul>
+<hr />
+<h2>4. Lifecycle State Semantics</h2>
+<h2>4.1 ChatSession state machine</h2>
+<ul>
+<li><code>active -&gt; paused</code> via pause</li>
+<li><code>paused -&gt; active</code> via resume</li>
+<li><code>active|idle|paused -&gt; closed</code> via destroy/expire</li>
+<li><code>active -&gt; idle</code> via policy timer (internal)</li>
+</ul>
+<p>Invariant:<br />
+- Physical runtime cannot outlive ChatSession</p>
+<h2>4.2 Lease/Instance state semantics</h2>
+<ul>
+<li>Lease may have 0..1 current instance</li>
+<li>Instance states provider-normalized to <code>running|paused|detached|unknown</code></li>
+<li>Lease can recreate instance when prior one is dead/detached</li>
+</ul>
+<hr />
+<h2>5. Storage Model (Context / Mount / Bucket)</h2>
+<p>Storage continuity is represented by <code>workspace_storages</code> and consumed by lease creation.</p>
+<h2>5.1 Ownership and precedence</h2>
+<p>Current effective precedence:<br />
+1. explicit thread binding<br />
+2. inherited from agent default workspace key at thread creation</p>
+<h2>5.2 Provider mapping</h2>
+<ul>
+<li>AgentBay: context-based continuity (<code>context_id</code> + mount path)</li>
+<li>Docker: volume + mount path continuity</li>
+<li>Daytona: workspace key / persisted disk continuity</li>
+<li>E2B: no native durable context, optional snapshot strategy in metadata</li>
+<li>Object store: bucket URI recorded as binding metadata</li>
+</ul>
+<p>Practical rule:<br />
+<strong>workspace_key is continuity anchor; instances are replaceable executors.</strong></p>
+<hr />
+<h2>6. Agent Model</h2>
+<h2>6.1 Why agent exists</h2>
+<p>Without agent entity, thread-scoped policy duplicates across tasks and loses persona-level continuity.</p>
+<h2>6.2 Current behavior</h2>
+<ul>
+<li>create agent with default sandbox + optional workspace key</li>
+<li>create multiple threads under one agent</li>
+<li>thread inherits policy defaults from agent</li>
+<li>each thread still has isolated terminal state and lifecycle</li>
+</ul>
+<p>This matches product intent:</p>
+<pre><code class="language-text">agentA
+  - thread1 (task)
+  - thread2 (task)
+</code></pre>
+<hr />
+<h2>7. Cross-Agent Collaboration Contract</h2>
+<p>Collaboration is explicit, not implicit runtime side-effect.</p>
+<p>Contract entities:<br />
+- channel (workspace anchored)<br />
+- member (agent membership + role)<br />
+- message (agent-authored content + metadata)</p>
+<p>Benefits:<br />
+- multiple agents can coordinate over same workspace domain<br />
+- terminal/runtime isolation remains per thread<br />
+- future orchestration can add automation on top of durable message contract</p>
+<hr />
+<h2>8. Ground Truth Resource Visibility (Leak Control)</h2>
+<h2>8.1 Problem solved</h2>
+<p>Thread/chat-session-centric inspect can hide real running resources.</p>
+<h2>8.2 Current design</h2>
+<p>Inspect now uses lease/provider-first ground truth:<br />
+- show tracked lease-backed sessions<br />
+- show untracked resources (<code>(untracked)</code>)<br />
+- show provider orphans (<code>(orphan)</code> equivalent source)</p>
+<p>Session list includes provenance fields:<br />
+- <code>source</code><br />
+- <code>lease_id</code><br />
+- <code>instance_id</code><br />
+- <code>chat_session_id</code></p>
+<h2>8.3 Mutability</h2>
+<p>Session-level mutation API exists for all rows (tracked or untracked):<br />
+- <code>POST /api/sandbox/sessions/{session_id}/pause</code><br />
+- <code>POST /api/sandbox/sessions/{session_id}/resume</code><br />
+- <code>DELETE /api/sandbox/sessions/{session_id}</code></p>
+<p>Internal routing:<br />
+- manager-thread path (tracked thread)<br />
+- manager-lease path (untracked lease row)<br />
+- provider-direct path (orphan provider row)</p>
+<p>This closes the gap: <strong>visible resource =&gt; actionable control</strong>.</p>
+<hr />
+<h2>9. API Surface (Current)</h2>
+<h2>9.1 Threads</h2>
+<ul>
+<li><code>POST /api/threads</code></li>
+<li><code>GET /api/threads</code></li>
+<li><code>GET /api/threads/{thread_id}</code></li>
+<li><code>DELETE /api/threads/{thread_id}</code></li>
+<li><code>POST /api/threads/{thread_id}/runs</code> (SSE)</li>
+</ul>
+<h2>9.2 Session / Terminal / Lease / Storage</h2>
+<ul>
+<li><code>GET /api/threads/{thread_id}/session</code></li>
+<li><code>GET /api/threads/{thread_id}/terminal</code></li>
+<li><code>GET /api/threads/{thread_id}/lease</code></li>
+<li><code>GET|PUT|DELETE /api/threads/{thread_id}/storage</code></li>
+</ul>
+<h2>9.3 Sandbox Inspect &amp; Control</h2>
+<ul>
+<li><code>GET /api/sandbox/types</code></li>
+<li><code>GET /api/sandbox/sessions</code></li>
+<li><code>GET /api/sandbox/sessions/{session_id}/metrics</code></li>
+<li><code>POST /api/sandbox/sessions/{session_id}/pause</code></li>
+<li><code>POST /api/sandbox/sessions/{session_id}/resume</code></li>
+<li><code>DELETE /api/sandbox/sessions/{session_id}</code></li>
+</ul>
+<p>Legacy thread-level controls still exist:<br />
+- <code>/api/threads/{thread_id}/sandbox/pause|resume|DELETE</code></p>
+<h2>9.4 Agent</h2>
+<ul>
+<li><code>POST /api/agents</code></li>
+<li><code>GET /api/agents</code></li>
+<li><code>GET /api/agents/{agent_id}</code></li>
+<li><code>POST /api/agents/{agent_id}/threads</code></li>
+<li><code>GET /api/agents/{agent_id}/threads</code></li>
+<li><code>GET /api/threads/{thread_id}/agent</code></li>
+</ul>
+<h2>9.5 Collaboration</h2>
+<ul>
+<li><code>POST /api/collab/channels</code></li>
+<li><code>GET /api/collab/channels</code></li>
+<li><code>GET /api/collab/channels/{channel_id}</code></li>
+<li><code>POST /api/collab/channels/{channel_id}/members</code></li>
+<li><code>POST /api/collab/channels/{channel_id}/messages</code></li>
+<li><code>GET /api/collab/channels/{channel_id}/messages</code></li>
+</ul>
+<hr />
+<h2>10. Frontend Integration (Current Branch State)</h2>
+<p>Frontend app (<code>frontend/app</code>) exposes a unified control center modal with tabs:<br />
+- sessions<br />
+- agents<br />
+- storage<br />
+- collab</p>
+<h3>10.1 Sessions tab</h3>
+<ul>
+<li>ground-truth rows with source/status</li>
+<li>open tracked thread</li>
+<li>pause/resume/destroy by session-level API</li>
+</ul>
+<h3>10.2 Agents tab</h3>
+<ul>
+<li>create agent</li>
+<li>list agents</li>
+<li>create thread under selected agent</li>
+<li>jump to thread</li>
+</ul>
+<h3>10.3 Storage tab</h3>
+<ul>
+<li>view/edit/remove storage binding for active thread</li>
+<li>inspect inherited/default behavior</li>
+</ul>
+<h3>10.4 Collab tab</h3>
+<ul>
+<li>create channel</li>
+<li>add member</li>
+<li>post/list messages</li>
+</ul>
+<hr />
+<h2>11. Test and Validation Summary</h2>
+<p>Validated in this architecture phase:<br />
+- unit/integration suites around terminal/session/lease/runtime/storage/agent/collab<br />
+- real backend + real provider E2E flow including:<br />
+  - agent creation<br />
+  - thread creation<br />
+  - storage inheritance<br />
+  - run/pause/resume/destroy lifecycle<br />
+  - collaboration channel and message flow<br />
+  - ground-truth inspect visibility and actionability</p>
+<hr />
+<h2>12. Known Limits / Next Evolution</h2>
+<ol>
+<li>SQLite is still control-plane DB (single-node oriented)</li>
+<li>
+<p>target: PostgreSQL/Supabase with transactional lifecycle transitions</p>
+</li>
+<li>
+<p>Query vs command separation is improved but not complete</p>
+</li>
+<li>
+<p>continue reducing side effects in read paths</p>
+</li>
+<li>
+<p>Contract cleanup</p>
+</li>
+<li>
+<p>eventually converge to session-level control APIs as canonical (deprecate thread-level controls)</p>
+</li>
+<li>
+<p>Capability leak controls</p>
+</li>
+<li>continue replacing topology booleans with behavior contracts</li>
+</ol>
+<hr />
+<h2>13. Experimental Thinkings (Separate Section)</h2>
+<p>This section records explicit exploration and tradeoffs (not final dogma).</p>
+<h2>13.1 Experiment A: Thread-centric storage binding only</h2>
+<p>Hypothesis:<br />
+- thread-level storage binding is sufficient</p>
+<p>Result:<br />
+- works technically<br />
+- duplicates policy for same agent persona across many tasks</p>
+<p>Conclusion:<br />
+- insufficient as long-term product model</p>
+<h2>13.2 Experiment B: Agent-centric ownership + task threads</h2>
+<p>Hypothesis:<br />
+- agent should own defaults, thread should own task execution</p>
+<p>Result:<br />
+- better ownership separation<br />
+- natural support for "same agent, multiple tasks"</p>
+<p>Conclusion:<br />
+- accepted into final design</p>
+<h2>13.3 Experiment C: Cross-agent collaboration as explicit contract</h2>
+<p>Hypothesis:<br />
+- collaboration should be modeled explicitly (channel/member/message), not by shared runtime accident</p>
+<p>Result:<br />
+- deterministic and auditable collaboration layer<br />
+- compatible with shared workspace + isolated terminals</p>
+<p>Conclusion:<br />
+- accepted into final design</p>
+<h2>13.4 Ground-truth inspect experiment</h2>
+<p>Hypothesis:<br />
+- inspect should be lease/provider-first, not chat-session-first</p>
+<p>Result:<br />
+- exposed hidden running resources<br />
+- revealed actionability gap for untracked rows<br />
+- session-level mutation API closed the loop</p>
+<p>Conclusion:<br />
+- accepted; critical for cost safety and leak prevention</p>
+<h2>13.5 Rejected / deferred ideas</h2>
+<ul>
+<li>"Only thread-level controls" as sole control plane: rejected</li>
+<li>Implicit cross-agent communication via shared filesystem only: rejected</li>
+<li>Making sandbox instance the durable source-of-truth: rejected</li>
+</ul>
+<p>Deferred:<br />
+- strict state-machine transition gateway<br />
+- move to Postgres/Supabase<br />
+- full event/audit stream for lifecycle transitions</p>
+<hr />
+<h2>14. One-line Summary</h2>
+<p>The architecture now treats compute as replaceable, identity/policy as durable, collaboration as explicit contract, and resource visibility/control as ground-truth first.</p>
+        </div>
+    </div>
+</body>
+</html>
